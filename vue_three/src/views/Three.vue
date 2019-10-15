@@ -5,9 +5,10 @@
 </template>
 
 <script>
-    export default {
-        
-    }
+import * as Three from "three"
+export default {
+    
+}
 </script>
 
 <style lang="scss" scoped>
