@@ -1,5 +1,6 @@
 # npm Jest环境示例
-## Jest 是一个功能全面的“零配置”测试框架，既集成了各种工具，且无需配置即可使用。
+
+> JEST是一个优雅的JavaScript测试框架，侧重于简单性。他可以在`babe`,`Typescript`,`Node`,`React`,`Angular`,`Vue`甚至更多项目中使用
 
 ## 安装
 配置过程
