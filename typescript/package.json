@@ -1,15 +1,24 @@
 {
-  "name": "@nodev/type",
+  "name": "@npmenv/type",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "do":"node src"
   },
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "typescript": "^3.6.3"
-  }
+  },
+  "keywords": ["@npmenv/type","typescript环境","npmenv"],
+  "bugs":"https://github.com/moshuying/nodeEnv/tree/master/js2run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshuying/nodeEnv/tree/master/js2run"
+  },
+
+  "author": "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)",
+  "license": "MIT",
+  "contributors": [
+    "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)"
+  ]
 }
