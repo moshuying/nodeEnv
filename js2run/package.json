@@ -1,19 +1,28 @@
 {
   "name": "js2run",
   "version": "1.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "一个js解释器",
+  "main": "src/index.js",
   "scripts": {
     "build": "parcel build ./src/index.js --global js2run",
     "build:demo": "parcel build ./demo.js -o demo.js"
   },
-  "keywords": [],
-  "author": "moshuying",
+  "keywords": ["js2run","解释器","编译器","运行js代码"],
+  "bugs":"https://github.com/moshuying/nodeEnv/tree/master/js2run",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshuying/nodeEnv/tree/master/js2run"
+  },
+
+  "author": "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)",
   "license": "MIT",
   "dependencies": {
     "acorn": "^6.0.4"
   },
   "devDependencies": {
     "parcel": "^1.10.3"
-  }
+  },
+  "contributors": [
+    "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)"
+  ]
 }
