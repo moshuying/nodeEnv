@@ -1,5 +1,5 @@
 {
-  "name": "vue_three",
+  "name": "@npmenv/vuethreejs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -39,5 +39,17 @@
       "vue-cli-service lint",
       "git add"
     ]
-  }
+  },
+  "keywords": ["@npmenv/vue_three","vue threejs环境","npmenv","threejs"],
+  "bugs":"https://github.com/moshuying/nodeEnv/tree/master/vue_three",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshuying/nodeEnv/tree/master/vue_three"
+  },
+
+  "author": "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)",
+  "license": "MIT",
+  "contributors": [
+    "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)"
+  ]
 }
