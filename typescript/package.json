@@ -4,16 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "do":"node src"
+    "dev":"node src"
   },
   "dependencies": {
     "typescript": "^3.6.3"
   },
   "keywords": ["@npmenv/type","typescript环境","npmenv"],
-  "bugs":"https://github.com/moshuying/nodeEnv/tree/master/js2run",
+  "bugs":"https://github.com/moshuying/nodeEnv/tree/master/typescript",
   "repository": {
     "type": "git",
-    "url": "https://github.com/moshuying/nodeEnv/tree/master/js2run"
+    "url": "https://github.com/moshuying/nodeEnv/tree/master/typescript"
   },
 
   "author": "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)",
