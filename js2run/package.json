@@ -1,6 +1,6 @@
 {
-  "name": "js2run",
-  "version": "1.0.1",
+  "name": "@npmenv/js2run",
+  "version": "1.0.3",
   "description": "一个js解释器",
   "main": "src/index.js",
   "scripts": {
