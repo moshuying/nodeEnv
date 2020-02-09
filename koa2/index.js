@@ -20,7 +20,9 @@ app.use(async (ctx, next) => {
 // x-response-time
 router.delete('/',async (ctx)=>{
   ctx.body = ctx.req
-
+})
+router.put('/',async(ctx)=>{
+  ctx.body = ctx.req
 })
 app.use(router.routes());   /*启动路由*/
 app.use(router.allowedMethods());
