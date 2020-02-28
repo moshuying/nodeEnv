@@ -88,7 +88,7 @@ export default {
       const data = new FormData()
       data.append('file', file)
       const res = await axios({
-        url: 'http://localhost:10001/upload',
+        url: process.env.VUE_APP_BASE_URL + '/upload',
         method: 'post',
         data,
         headers: {

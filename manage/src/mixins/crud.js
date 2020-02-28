@@ -1,7 +1,7 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-02-07 15:26:55
- * @LastEditTime :2020-02-09 22:50:46
+ * @LastEditTime :2020-02-28 21:27:24
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -61,17 +61,14 @@ export default {
       const { primaryKey } = this.$options.customOpts
       const id = this.form[primaryKey]
       const fn = id ? put : post
-      if (this.createBeforeHook) {
-        const result = this.createBeforeHook()
-        if (result === false) {
-          return
-        } else if (result) {
-          this.form = extend(this.form, result)
-        }
-      }
       this.$refs.form.validate(async valid => {
         if (valid) {
-          const form = this.createBeforeHook() || this.filterEmptyValue(this.form)
+          let form = {}
+          if(this.createBeforeHook){
+            form = this.createBeforeHook()
+          }else{
+            form = this.filterEmptyValue(this.form)
+          }
           const result = await fn(this.$options.customOpts.baseURI, {
             ...form
           })

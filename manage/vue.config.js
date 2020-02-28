@@ -24,7 +24,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: process.env.NODE_ENV === 'production' ? '/manage/' : './', // 部署应用包时的基本 URL， 用法和 webpack 本身的 output.publicPath 一致。
+  publicPath:'./', // 部署应用包时的基本 URL， 用法和 webpack 本身的 output.publicPath 一致。
   indexPath: 'index.html',
   filenameHashing: true,
   assetsDir: 'static',
