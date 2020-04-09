@@ -8,7 +8,7 @@
 
 |路径|简介|
 |---|---|--|
-|[js2run](https://github.com/moshuying/nodeEnv/tree/master/js2run)|[![npm](https://img.shields.io/npm/dt/js2run?style=social&logo=appveyor)![NPM](https://img.shields.io/npm/l/js2run?style=social&logo=appveyor) ![npm type definitions](https://img.shields.io/npm/types/js2run?style=social&logo=appveyor)![npm bundle size](https://img.shields.io/bundlephobia/min/js2run?style=social)](https://github.com/moshuying/nodeEnv/tree/master/js2run)自己做的一个用js运行js的样例,为settimeout,new function,setInterval,eval方法不可用时提供|
+|[js2run](https://github.com/moshuying/nodeEnv/tree/master/js2run)|自己做的一个用js运行js的样例,为settimeout,new function,setInterval,eval方法不可用时提供|
 |[autoRestFulApi](https://github.com/moshuying/nodeEnv/tree/master/autoRestFulApi)|根据模板自动生成restfulapi,已包含upload接口用于上传静态文件,已设置logger,快速开发小型项目使用,甚至可以自动生成sql脚本去创建数据库,连点点点的时间都省了|
 |[manage](https://github.com/moshuying/nodeEnv/tree/master/manage)|基于vue的一个快速开发后台界面的基础模板|
 |[jest](https://github.com/moshuying/nodeEnv/tree/master/jest)|jtest是一个自动测试脚本|
