@@ -1,0 +1,20 @@
+{
+  "name": "autoaddgreenpoint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "cron": "^1.7.1",
+    "fs": "0.0.1-security",
+    "nodemailer": "^6.4.6"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
+  }
+}
