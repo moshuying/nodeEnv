@@ -1,7 +1,7 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-04-14 15:05:43
- * @LastEditTime :2020-04-14 15:54:45
+ * @LastEditTime :2020-04-18 11:24:28
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -37,17 +37,9 @@ run()
 function run () {
   // timeclock
   timestart = new Date()
-  const data = String(~~(Math.random() * 100000000))
-
-  writeFileSync('temp.json', data)
   const day = new Date()
   const fileTimeName = day.getFullYear() + '_' + (day.getMonth() + 1) + '_' + day.getDate()
 
-  // Orderly execution of instructions
-  backupTemplete('git', ['checkout', 'master'])
-  backupTemplete('git', ['add', '.'])
-  backupTemplete('git', ['commit', '-m', data])
-  backupTemplete('git', ['push'])
   // Backup database
   writeFileSync(
     `${config.workspace}all_databases_${fileTimeName}.sql`,
