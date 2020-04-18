@@ -1,7 +1,7 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-04-14 15:05:43
- * @LastEditTime :2020-04-18 11:24:28
+ * @LastEditTime :2020-04-14 15:54:45
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -9,13 +9,12 @@
  * @Description :墨抒颖
  */
 
-const spawnSync = require('child_process').spawnSync
-const writeFileSync = require('fs').writeFileSync
 const CronJob = require('cron').CronJob
 const colorLog = require('./colorLog')
 const config = require('./config')
 
 let msgStr = ''
+let errInfo = ''
 let timestart = new Date()
 let timeend = new Date()
 
@@ -35,11 +34,20 @@ run()
  * backup function
  */
 function run () {
+  const writeFileSync = require('fs').writeFileSync
   // timeclock
   timestart = new Date()
+  const data = String(~~(Math.random() * 100000000))
+
+  writeFileSync('temp.json', data)
   const day = new Date()
   const fileTimeName = day.getFullYear() + '_' + (day.getMonth() + 1) + '_' + day.getDate()
 
+  // Orderly execution of instructions
+  backupTemplete('git', ['checkout', 'master'])
+  backupTemplete('git', ['add', '.'])
+  backupTemplete('git', ['commit', '-m', data])
+  backupTemplete('git', ['push'])
   // Backup database
   writeFileSync(
     `${config.workspace}all_databases_${fileTimeName}.sql`,
@@ -55,8 +63,7 @@ function run () {
       config.ignoreWorkspace.map(el => '--exclude=' + el),
       [config.workspace]
     ),
-    null,
-    'compress'
+    { missionType: 'compress' }
   )
   backupTemplete('bypy', [`upload`, `${config.workspace + config.serveName + fileTimeName}.tar.gz`, config.uplaodPath])
   backupTemplete(
@@ -68,26 +75,54 @@ function run () {
 
 /**
  *
- * @param {String} commandStr
- * @param {Array<string>} arg
- * @param {String} missionName
- * @param {String} missionType
- * Encapsulate instructions spawnSync
+ * @param {string} commandStr
+ * @param {string[]} arg
+ * @param {object} options
+ * @param {string} options.missionName
+ * @param {string} options.missionType
+ * @param {boolean} options.SilentImp
  */
-function backupTemplete (commandStr, arg, missionName, missionType) {
+function backupTemplete (commandStr, arg, options) {
+  // analytic parameter
+  // eslint-disable-next-line prefer-const
+  let { missionName, missionType, SilentImp } = { missionName: '', missionType: '', SilentImp: false, ...options }
+  SilentImp = SilentImp || config.SilentImp
   missionName = missionName || commandStr
   missionType = missionType || arg[0]
+  // console.log(missionName, missionType, SilentImp)
+
+  // Silent implementation
+  SilentImp && (
+    colorLog.white = () => {},
+    colorLog.red = () => {},
+    colorLog.yellow = () => {}
+  )
+
+  const start = new Date()
   colorLog.white(`[${missionName}]: ${missionType} start`)
-  msgStr += `[${missionName}]: ${missionType} complete\n[${missionName}]:`
+
+  const spawnSync = require('child_process').spawnSync
   const res = spawnSync(commandStr, arg)
-  if (res.error || res.stderr.toString().length > 1) {
+
+  msgStr += `[${missionName}]:`
+
+  if (res.error) {
     colorLog.red(`[${missionName}]: ${missionType} error`)
+    errInfo += `Has error in [${missionName}]: ${missionType}.\n${res.stderr.toString()}\n`
     msgStr += ` error \n${res.stderr.toString()}\n`
     console.log(res.stderr.toString())
+  } else if (res.stderr.toString().length > 1) {
+    colorLog.yellow(`[${missionName}]: ${missionType} error`)
+    msgStr += ` warning \n${res.stderr.toString()}\n`
+    SilentImp && console.log(res.stderr.toString())
   } else {
     colorLog.white(`[${missionName}]: ${missionType} success`)
-    msgStr += ` success`
+    msgStr += ` success \n`
   }
+
+  const end = new Date()
+  colorLog.white(`[${missionName}]: ${missionType} complete,Using timed ${end - start}ms\n`)
+  msgStr += `[${missionName}]: ${missionType} complete,Using timed ${end - start}ms\n`
   return res
 }
 
@@ -115,7 +150,11 @@ function sendMailtoMyself () {
     // mail subject
     subject: 'mission complete in ' + config.serveName,
     // mail conent to html
-    html: `<pre>\nToday's mission is complete in ${config.serveName} at ${timeend.toLocaleString()} .\nUsing time ${(timeend - timestart) / 1000}s .\nThe running log is \n${msgStr}</pre>`
+    html: `<pre>\nToday's mission is complete in ${config.serveName} at ${
+      timeend.toLocaleString()
+    } .\nUsing time ${(timeend - timestart) / 1000}s.\n${
+      errInfo.length > 1 ? (errInfo + '\nThe running log is\n' + msgStr) : 'No Error'
+    }\n</pre>`
   }, (error) => {
     if (error) {
       colorLog.red(`[mail]: Message error ${timeend.toLocaleString()}\n`, error)
