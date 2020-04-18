@@ -1,0 +1,26 @@
+
+module.exports = {
+	'bold'          :(str)=>{console.log('\x1B[1m%s\x1B[22m',str);},
+	'italic'        :(str)=>{console.log('\x1B[3m%s\x1B[23m',str);},
+	'underline'     :(str)=>{console.log('\x1B[4m%s\x1B[24m',str);},
+	'inverse'       :(str)=>{console.log('\x1B[7m%s\x1B[27m',str);},
+	'strikethrough' :(str)=>{console.log('\x1B[9m%s\x1B[29m',str);},
+	'white'         :(str)=>{console.log('\x1B[37m%s\x1B[39m',str);},
+	'grey'          :(str)=>{console.log('\x1B[90m%s\x1B[39m',str);},
+	'black'         :(str)=>{console.log('\x1B[30m%s\x1B[39m',str);},
+	'blue'          :(str)=>{console.log('\x1B[34m%s\x1B[39m',str);},
+	'cyan'          :(str)=>{console.log('\x1B[36m%s\x1B[39m',str);},
+	'green'         :(str)=>{console.log('\x1B[32m%s\x1B[39m',str);},
+	'magenta'       :(str)=>{console.log('\x1B[35m%s\x1B[39m',str);},
+	'red'           :(str)=>{console.log('\x1B[31m%s\x1B[39m',str);},
+	'yellow'        :(str)=>{console.log('\x1B[33m%s\x1B[39m',str);},
+	'whiteBG'       :(str)=>{console.log('\x1B[47m%s\x1B[49m',str);},
+	'greyBG'        :(str)=>{console.log('\x1B[49;5;8m%s\x1B[49m',str);},
+	'blackBG'       :(str)=>{console.log('\x1B[40m%s\x1B[49m',str);},
+	'blueBG'        :(str)=>{console.log('\x1B[44m%s\x1B[49m',str);},
+	'cyanBG'        :(str)=>{console.log('\x1B[46m%s\x1B[49m',str);},
+	'greenBG'       :(str)=>{console.log('\x1B[42m%s\x1B[49m',str);},
+	'magentaBG'     :(str)=>{console.log('\x1B[45m%s\x1B[49m',str);},
+	'redBG'         :(str)=>{console.log('\x1B[41m%s\x1B[49m',str);},
+	'yellowBG'      :(str)=>{console.log('\x1B[43m%s\x1B[49m]',str);}
+};

@@ -1,27 +1,26 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-02-05 15:29:56
- * @LastEditTime :2020-02-09 22:00:00
+ * @LastEditTime :2020-03-20 09:15:21
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
- * @Blogs :http://sfau.lt/bPbzVVJ
+ * @Blogs :https://blog.csdn.net/qq_34846662
  * @Description :墨抒颖
  */
 const fs = require('fs');
-
-let apipath = __dirname+'\\lib\\api\\';
+const colorLog = require('../app/lib/colorLog');
+let apipath =__filename.substr(0,__filename.length-11) + '/lib/api/';
 let req = [];
 
 fs.readdirSync(apipath).forEach((el)=>{
-	let api = require(apipath+el).req;
+	let api = require(apipath+el);
 	for(const key in api){
-		// req.push(api[key]);
 		// eslint-disable-next-line no-prototype-builtins
 		if(api[key].hasOwnProperty('path')&&api[key].hasOwnProperty('type')&&api[key].hasOwnProperty('fn')){
 			req.push(api[key]);
 		}else{
-			console.error('[API ERROR]:'+JSON.stringify(api));
+			colorLog.red('[API ERROR]:'+JSON.stringify(api));
 		}
 	}
 });

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "node index.js"
+    "serve": "node index.js serve",
+    "buildSql":"node app/lib/api/zMain.js buildSql",
+    "test": "mocha ./test/index.test.js --exit"
   },
   "keywords": [],
   "author": "",
@@ -17,11 +19,14 @@
     "koa-static": "^5.0.0",
     "koa2-cors": "^2.0.6",
     "mysql": "^2.18.1",
-    "sequelize": "^5.21.3"
+    "sequelize": "^5.21.3",
+    "tinify": "^1.6.0-beta.2"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
     "koa-log4": "^2.3.2",
-    "log4js": "^6.1.1"
+    "log4js": "^6.1.1",
+    "mocha": "^7.1.1",
+    "supertest": "^4.0.2"
   }
 }

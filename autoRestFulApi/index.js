@@ -1,11 +1,11 @@
 /**
+ * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-12-21 19:41:10
- * @LastEditTime :2020-02-09 21:17:04
+ * @LastEditTime :2019-12-21 19:41:59
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
- * @Blogs :http://sfau.lt/bPbzVVJ
- * @Description : 执行文件
+ * @Blogs :https://blog.csdn.net/qq_34846662
  */
-require('./app');
+require('./app')

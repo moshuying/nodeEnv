@@ -1,17 +1,19 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-02-06 18:34:34
- * @LastEditTime :2020-02-09 20:45:43
+ * @LastEditTime :2020-03-20 09:18:25
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
- * @Blogs :http://sfau.lt/bPbzVVJ
- * @Description :上传文件的样例
+ * @Blogs :https://blog.csdn.net/qq_34846662
+ * @Description :墨抒颖
  */
 const fs = require('fs');
 const { resolve } = require('path');
-const CONFIG = require('../../config');
-const fileDir = `${resolve('./')}\\app\\assets\\upload`;
+const colorLog = require('../colorLog');
+const tinify = require('tinify');
+tinify.key=global.config.tinifykey;
+const fileDir = resolve('./')+global.config.path.fileDir;
 if (!fs.existsSync(fileDir)) {
 	try {
 		fs.mkdirSync(fileDir);
@@ -30,24 +32,21 @@ let req = [
 				if (!~name || !~path) {
 					ctx.body = { code: 403, msg: '获取文件名或路径出错' };
 				} else {
-					// 重命名
+					// rename
 					let day = new Date();
-					const fileName =
-            String(day.getFullYear()) +
-            '-' +
-            String(day.getDate()) +
-            '-' +
-            String(day.getDay()) +
-            'M' +
-            String(day.getTime()) +
-            '.' +
-            String(type.substr(6));
-					// 读取文件流后写入到upload文件夹
-					fs.createReadStream(path).pipe(
-						fs.createWriteStream(`${fileDir}/${fileName}`)
-					);
-					// http://127.0.0.1:10001/assets/upload/2020-6-4M9780.png
-					ctx.body = { ...CONFIG.success, url:CONFIG.source+'/assets/upload/'+ fileName };
+					const fileName = 
+						ctx.query.path
+						+(ctx.query.name?('_'+ctx.query.name):'')
+						+'_'+day.getFullYear()
+						+'-' +(day.getMonth()+1)+'-' +day.getDate()+'_' +day.getTime()
+						+'.'+type.substr(6);
+					let createName = fileDir+'/'+fileName;
+					// Read file stream ,And save to upload
+					fs.createReadStream(path).pipe(fs.createWriteStream(createName));
+					// quality file
+					tinify.fromFile(createName).toFile(createName);
+					colorLog.green('[file]: upload success');
+					ctx.body = { ...global.config.success, url:global.config.source+'/assets/upload/'+ fileName };
 				}
 			} else {
 				ctx.body = { code: 406, msg: '文件类型错误' };

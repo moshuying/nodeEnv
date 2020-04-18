@@ -1,15 +1,15 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-02-07 18:01:59
- * @LastEditTime :2020-02-09 21:16:43
+ * @LastEditTime :2020-02-09 03:05:42
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
- * @Blogs :http://sfau.lt/bPbzVVJ
- * @Description :数据库连接类
+ * @Blogs :https://blog.csdn.net/qq_34846662
+ * @Description :墨抒颖
  */
 let mysql = require('mysql');
-let config = require('../config');
+const config = require('../config');
 let pool  = mysql.createPool({
 	host     : config.database.HOST,
 	user     : config.database.USERNAME,
@@ -24,6 +24,7 @@ const query = function( sql, values ) {
 				reject( err );
 			} else {
 				connection.query(sql, values, ( err, rows) => {
+
 					if ( err ) {
 						reject( err );
 					} else {

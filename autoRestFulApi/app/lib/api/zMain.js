@@ -2,30 +2,20 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-02-08 21:33:06
- * @LastEditTime :2020-02-09 22:02:29
+ * @LastEditTime :2020-02-09 11:55:45
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
- * @Blogs :http://sfau.lt/bPbzVVJ
+ * @Blogs :https://blog.csdn.net/qq_34846662
  * @Description :墨抒颖
  */
+
 const sql = require('../mysql');
 const config = require('../../config');
-/**
-	每一个接口包含get,put,post,del
-	get  返回对应表下的所有数据,如果有type则过滤一下
-	put  用于更新数据,需传入所有字段,
-	post  用于创建数据
-	del  批量删除,传入id数组即可
-{
-	msg: '教师', // 返回的提示信息,前端用以区分不同接口
-	name: 'teachers', // 表的名称
-	path: 'teachers', // 请求路径
-	// type:'type', // 类型,查询表下不同数据时使用
-	primarykey: 'id', // 主键,修改时使用
-	key: ['name', 'url', 'type', 'pre'] // 新增和修改
-};
-*/
+const fs = require('fs');
+const path = require('path');
+const {logger } = require('../../logger');
+const colorLog = require('../colorLog');
 const AUTOTABLE = [
 	{
 		msg: '留言',
@@ -80,9 +70,9 @@ const AUTOTABLE = [
 	}
 ];
 
-let req = [];
+let autoREQ = [];
 AUTOTABLE.forEach(TABLE => {
-	req.push({
+	autoREQ.push({
 		path: TABLE.path,
 		type: 'get',
 		fn: async ctx => {
@@ -95,12 +85,37 @@ AUTOTABLE.forEach(TABLE => {
 			ctx.body = { ...config.success, data: await sql.query(str, arr) };
 		}
 	});
-	req.push({
+	autoREQ.push({
 		path: TABLE.path,
 		type: 'put',
 		fn: async ctx => {
-			let str = 'UPDATE `' + TABLE.name + '` SET ';
-			let arr = [];
+			let str,arr=['',[]]; 
+			// has url mosut be has file
+			if(TABLE.key.includes('url')){
+
+				// get old image path
+				str = 'SELECT * FROM `' +TABLE.name +'`' +' WHERE (`id` =?)';
+				arr = [];
+				arr.push(ctx.request.body[TABLE.primarykey]);
+				let src = await sql.query(str,arr);
+
+				// nerver change do not remove
+				if(src[0].url!==ctx.request.body.url){
+
+					// remove old image
+					try {
+						fs.unlinkSync(path.join(__dirname,'../../',src[0].url.replace(config.source,'')));
+						colorLog.green('[file]: unlink success');
+					} catch (error) {
+						logger.error('[file]: unlink fail\n',error);
+					}
+				}else{
+					colorLog.yellow('[file]: url never chage');
+				}	
+			}
+			// update new info
+			str = 'UPDATE `' + TABLE.name + '` SET ';
+			arr = [];
 			for (let i = 0; i < TABLE.key.length; i++) {
 				let el = TABLE.key[i];
 				str += '`' + el + (i === TABLE.key.length - 1 ? '`=?' : '`=?,'); // sql语句的最后一个元素不能带","
@@ -122,7 +137,7 @@ AUTOTABLE.forEach(TABLE => {
 			}
 		}
 	});
-	req.push({
+	autoREQ.push({
 		path: TABLE.path,
 		type: 'post',
 		fn: async ctx => {
@@ -147,16 +162,26 @@ AUTOTABLE.forEach(TABLE => {
 			}
 		}
 	});
-	req.push({
+	autoREQ.push({
 		path: TABLE.path,
 		type: 'del',
 		fn: async ctx => {
 			let { id } = ctx.request.body;
 			id.forEach(async el => {
-				let res = await sql.query(
-					'DELETE FROM `' + TABLE.name + '` WHERE (`id`=?)',
-					[el]
-				);
+				// remove file
+				let src = await sql.query('SELECT * FROM `' +TABLE.name +'`' +' WHERE (`id` =?)',[id]);
+				if(src[0].url){
+					try {
+						fs.unlinkSync(path.join(__dirname,'../../',src[0].url.replace(config.source,'')));
+						colorLog.green('[file]: unlink success');
+					} catch (error) {
+						logger.error('[file]: unlink fail\n',error);
+					}
+				}else{
+					colorLog.yellow(`[file]: no url in ${TABLE.name} item`);
+				}
+				// delete info from dataBase
+				let res = await sql.query('DELETE FROM `' + TABLE.name + '` WHERE (`id`=?)',[el]);
 				if (!res.message) {
 					ctx.body = {
 						code: 400,
@@ -172,7 +197,22 @@ AUTOTABLE.forEach(TABLE => {
 	});
 });
 
-module.exports={
-	req,
-	TABLE:AUTOTABLE
-};
+module.exports = autoREQ;
+if(process.argv[2]=='buildSql'){
+	autoCreateSQL();
+}
+// 执行下面这个函数就可以获得一个自动建表的脚本,不过数据类型太死板,还可以再调调
+function autoCreateSQL() {
+	let str = '';
+	AUTOTABLE.forEach(el => {
+		str += `DROP TABLE IF EXISTS \`${el.name}\`;\nCREATE TABLE \`teachers\` (\n  \`id\` int(11) NOT NULL AUTO_INCREMENT,`;
+		el.key.forEach(item => {
+			str += `  \`${item}\` text,\n`;
+		});
+		str +=
+      '  `createtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT \'CURRENT_TIMESTAMP\',\n  PRIMARY KEY (`id`)\n)ENGINE=InnoDB DEFAULT CHARSET=utf8;\n';
+	});
+	const fs = require('fs');
+	fs.writeFileSync('./autoCreateSQL.sql', str);
+	colorLog.green('[file]: createSql success . file in  autoCreateSQL.sql');
+}

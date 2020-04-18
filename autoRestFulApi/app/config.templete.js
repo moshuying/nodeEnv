@@ -1,7 +1,7 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-02-06 19:02:07
- * @LastEditTime :2020-02-09 20:36:19
+ * @LastEditTime :2020-04-17 23:01:04
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -14,13 +14,14 @@ const config = {
 		code:200,
 		msg:'处理成功'
 	},
-	source:'http://moshuying.top:'+8000, // 上传文件后返回的图片url
-	database:{
-		USERNAME:'root',
+	source:'<your source url>'+8000, // 前面的字符串记得换成你 上传文件后返回的图片url
+	database:{ // 数据库配置
+		USERNAME:'',
 		PASSWORD:'',
 		DATABASE:'',
 		PORT: '',
-		HOST: 'moshuying.top'
-	}
+		HOST: ''
+	},
+	tinifykey:'' // 去这里申请 https://tinypng.com/developers/reference/nodejs
 };
 module.exports=config;
