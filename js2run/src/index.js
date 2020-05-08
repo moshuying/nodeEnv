@@ -2,7 +2,7 @@
  * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-11-08 19:24:28
- * @LastEditTime :2020-05-08 12:02:44
+ * @LastEditTime :2020-05-08 15:34:34
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -12,32 +12,4 @@
  * eg: new js2run('console.log("Hello World!")').run()
  */
 
-// const { Parser } = require("acorn");
-const Parser = require("./acronParser")
-
-const NodeIterator = require("./iterator");
-const Scope = require("./scope");
-
-class js2run {
-  constructor(code = "", extraDeclaration = {}) {
-    this.code = code;
-    this.extraDeclaration = extraDeclaration;
-    this.ast = Parser.parse(code);
-    this.nodeIterator = null;
-    this.init();
-  }
-
-  init() {
-    const globalScope = new Scope("function");
-    Object.keys(this.extraDeclaration).forEach(key => {
-      globalScope.addDeclaration(key, this.extraDeclaration[key]);
-    });
-    this.nodeIterator = new NodeIterator(null, globalScope);
-  }
-
-  run() {
-    return this.nodeIterator.traverse(this.ast);
-  }
-}
-
-module.exports = js2run;
+module.exports = require('./interpreter');

@@ -2,7 +2,7 @@
  * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-11-08 19:24:28
- * @LastEditTime :2019-11-08 19:31:48
+ * @LastEditTime :2020-05-08 15:37:16
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -10,8 +10,64 @@
  * @Use :节点处理器，处理AST当中的节点
  */
 
-const Signal = require("../signal");
-const { MemberVal } = require("../value");
+class Signal {
+  constructor(type, value) {
+    this.type = type;
+    this.value = value;
+  }
+
+  static Return(value) {
+    return new Signal("return", value);
+  }
+
+  static Break(label = null) {
+    return new Signal("break", label);
+  }
+
+  static Continue(label) {
+    return new Signal("continue", label);
+  }
+
+  static isReturn(signal) {
+    return signal instanceof Signal && signal.type === "return";
+  }
+
+  static isContinue(signal) {
+    return signal instanceof Signal && signal.type === "continue";
+  }
+
+  static isBreak(signal) {
+    return signal instanceof Signal && signal.type === "break";
+  }
+
+  static isSignal(signal) {
+    return signal instanceof Signal;
+  }
+}
+
+/**
+ * 创建一个类变量
+ *
+ * @class
+ * @param any obj 类
+ * @param prop any 属性
+ * @method set 设置类的属性的值
+ * @method get 获取类的属性的值
+ */
+class MemberVal {
+  constructor(obj, prop) {
+    this.obj = obj;
+    this.prop = prop;
+  }
+
+  set(value) {
+    this.obj[this.prop] = value;
+  }
+
+  get() {
+    return this.obj[this.prop];
+  }
+}
 
 const NodeHandler = {
   Program(nodeEL) {

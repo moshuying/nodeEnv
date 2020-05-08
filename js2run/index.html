@@ -1,0 +1,35 @@
+<!--
+ * #Author :墨抒颖
+ * #Date :2020-05-08 15:38:07
+ * #LastEditTime :2020-05-08 15:42:45
+ * #LastEditors :墨抒颖
+ * #Github :https://github.com/moshuying
+ * #Gitee :https://gitee.com/moshuying
+ * #Blogs :http://sfau.lt/bPbzVVJ
+ * #Description :墨抒颖
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./dist/index.js"></script>
+</head>
+<body>
+  <script>
+    
+    window.temp =(el) =>el**el
+let codeStr = `
+function fibonacci(n) {
+  if(n==0 || n == 1)
+      return n;
+  return fibonacci(n-1) + fibonacci(n-2);
+}
+console.log(fibonacci(10))
+`
+// eval(codeStr)
+new parcelRequire(codeStr,window).run()
+  </script>
+</body>
+</html>
