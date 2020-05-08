@@ -1,0 +1,42 @@
+<!--
+ * #Author :墨抒颖
+ * #Date :2020-05-08 16:26:09
+ * #LastEditTime :2020-05-08 16:42:36
+ * #LastEditors :墨抒颖
+ * #Github :https://github.com/moshuying
+ * #Gitee :https://gitee.com/moshuying
+ * #Blogs :http://sfau.lt/bPbzVVJ
+ * #Description :墨抒颖
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在浏览器中运行Js2run</title>
+  <style>
+    body,html {
+      padding: 0;
+      margin: 0;
+      width:100%;
+    }
+    #codeBox{
+      width:30%;
+      margin:0 auto;
+      height: 20rem;
+    }
+  </style>
+  <script src="./dist/index.js"></script>
+</head>
+<body>
+  <textarea id="codeBox" type="text"></textarea>
+  <button onclick="run()" >运行</button>
+  <script>
+    function run(){
+      var code = document.getElementById('codeBox').value
+      new Js2Run(code).run()
+    }
+    // console.log()
+  </script>
+</body>
+</html>

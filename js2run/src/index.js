@@ -2,7 +2,7 @@
  * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-11-08 19:24:28
- * @LastEditTime :2019-11-08 19:28:53
+ * @LastEditTime :2020-05-08 16:24:49
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -12,11 +12,11 @@
  * eg: new js2run('console.log("Hello World!")').run()
  */
 
-const { Parser } = require("acorn");
+const  Parser  = require("acorn");
 const NodeIterator = require("./iterator");
 const Scope = require("./scope");
 
-class js2run {
+class Js2Run {
   constructor(code = "", extraDeclaration = {}) {
     this.code = code;
     this.extraDeclaration = extraDeclaration;
@@ -38,4 +38,12 @@ class js2run {
   }
 }
 
-module.exports = js2run;
+try {
+  global.Js2Run = Js2Run
+} catch (e) {}
+
+try {
+  window.Js2Run = Js2Run
+} catch (e) {}
+
+module.exports = Js2Run;

@@ -4,16 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "parcel build ./src/index.js --global js2run",
-    "build:demo": "parcel build ./demo.js -o demo.js"
+    "build": "parcel build ./src/index.js --no-cache js2run ",
+    "build:demo": "parcel build ./demo.js -o --no-cache demo.js "
   },
   "keywords": [],
   "author": "moshuying",
   "license": "MIT",
   "dependencies": {
-    "acorn": "^6.0.4"
+    "acorn": "^7.1.1"
   },
   "devDependencies": {
-    "parcel": "^1.10.3"
+    "parcel": "^1.12.4"
   }
 }
