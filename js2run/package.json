@@ -8,18 +8,23 @@
     "build:demo": "parcel build ./demo.js -o demo.js"
   },
   "dependencies": {
-    "acorn": "^6.0.4"
+    "acorn": "^6.0.4",
+    "@babel/parser": "^7.9.6"
   },
   "devDependencies": {
     "parcel": "^1.10.3"
   },
-  "keywords": ["js2run","解释器","编译器","运行js代码"],
-  "bugs":"https://github.com/moshuying/nodeEnv/tree/master/js2run",
+  "keywords": [
+    "js2run",
+    "解释器",
+    "编译器",
+    "运行js代码"
+  ],
+  "bugs": "https://github.com/moshuying/nodeEnv/tree/master/js2run",
   "repository": {
     "type": "git",
     "url": "https://github.com/moshuying/nodeEnv/tree/master/js2run"
   },
-
   "author": "MoShuYing<https://me.csdn.net/qq_34846662>(https://github.com/moshuying)(https://gitee.com/moshuying)",
   "license": "MIT",
   "contributors": [

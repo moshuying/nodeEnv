@@ -2,7 +2,7 @@
  * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-11-08 19:24:28
- * @LastEditTime :2019-11-08 19:28:53
+ * @LastEditTime :2020-05-08 12:02:44
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -12,7 +12,9 @@
  * eg: new js2run('console.log("Hello World!")').run()
  */
 
-const { Parser } = require("acorn");
+// const { Parser } = require("acorn");
+const Parser = require("./acronParser")
+
 const NodeIterator = require("./iterator");
 const Scope = require("./scope");
 
