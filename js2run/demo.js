@@ -2,7 +2,7 @@
  * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-11-08 19:33:18
- * @LastEditTime :2020-05-08 16:25:01
+ * @LastEditTime :2020-05-08 16:52:20
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -11,8 +11,11 @@
  */
 const Js2Run = require('./src')
 
-const func = (el)=>{console.log(el)}
-let codeStr = `func(99)`
-// eval(codeStr)
-new Js2Run(codeStr,{func}).run()
+let codeStr = `
+function func(el){
+  console.log(el*el)
+}
+func(10)
+`
+new Js2Run(codeStr).run()
 
