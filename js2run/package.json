@@ -4,8 +4,8 @@
   "description": "一个js解释器",
   "main": "src/index.js",
   "scripts": {
-    "build": "parcel build ./src/index.js --global js2run",
-    "build:demo": "parcel build ./demo.js -o demo.js"
+    "build": "parcel build ./src/index.js --no-cache js2run ",
+    "build:demo": "parcel build ./demo.js -o --no-cache demo.js "
   },
   "dependencies": {
     "acorn": "^6.0.4",

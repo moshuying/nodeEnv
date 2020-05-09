@@ -2,7 +2,7 @@
  * @Description :墨抒颖
  * @Author :墨抒颖
  * @Date :2019-11-08 19:33:18
- * @LastEditTime :2020-05-08 15:31:44
+ * @LastEditTime :2020-05-09 13:10:07
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -11,13 +11,6 @@
  */
 // const Js2Run = require('./src')
 const Js2Run = require('./src')
-try {
-  global.Js2Run = Js2Run
-} catch (e) {}
-
-try {
-  window.Js2Run = Js2Run
-} catch (e) {}
 
 // const func = (el)=>{console.log(el)}
 global.temp =(el) =>el**el

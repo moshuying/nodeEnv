@@ -1,7 +1,12 @@
 <!--
  * #Author :墨抒颖
+<<<<<<< HEAD
  * #Date :2020-05-08 15:38:07
  * #LastEditTime :2020-05-08 15:42:45
+=======
+ * #Date :2020-05-08 16:26:09
+ * #LastEditTime :2020-05-08 16:42:36
+>>>>>>> old
  * #LastEditors :墨抒颖
  * #Github :https://github.com/moshuying
  * #Gitee :https://gitee.com/moshuying
@@ -13,6 +18,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
   <title>Document</title>
   <script src="./dist/index.js"></script>
 </head>
@@ -30,6 +36,32 @@ console.log(fibonacci(10))
 `
 // eval(codeStr)
 new parcelRequire(codeStr,window).run()
+=======
+  <title>在浏览器中运行Js2run</title>
+  <style>
+    body,html {
+      padding: 0;
+      margin: 0;
+      width:100%;
+    }
+    #codeBox{
+      width:30%;
+      margin:0 auto;
+      height: 20rem;
+    }
+  </style>
+  <script src="./dist/index.js"></script>
+</head>
+<body>
+  <textarea id="codeBox" type="text"></textarea>
+  <button onclick="run()" >运行</button>
+  <script>
+    function run(){
+      var code = document.getElementById('codeBox').value
+      new Js2Run(code).run()
+    }
+    // console.log()
+>>>>>>> old
   </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /**
  * @Author :墨抒颖
  * @Date :2020-05-08 11:49:45
- * @LastEditTime :2020-05-08 12:03:17
+ * @LastEditTime :2020-05-09 13:09:40
  * @LastEditors :墨抒颖
  * @Github :https://github.com/moshuying
  * @Gitee :https://gitee.com/moshuying
@@ -228,4 +228,5 @@ class Scope {
     return this.declaration[name];
   }
 }
+
 module.exports = js2run;
