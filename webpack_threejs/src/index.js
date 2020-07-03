@@ -7,6 +7,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { BackSide } from "three";
 
 let renderer,
   camera,
@@ -18,26 +19,29 @@ let renderer,
     bloomStrength: 1.5,
     bloomThreshold: 0,
     bloomRadius: 0,
+    pause: false,
   },
   windowSize = {
     multiplyingPower: 1,
   },
   composer,
-  bloomPass;
-//声明raycaster和mouse变量 相应快一点可以把变量提出去
+  bloomPass,
+  animate,
+  xRayScene;
+//声明raycaster和mouse变量 响应快一点可以把变量提出去
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
 class App {
   constructor() {
+    this.xRayComposer = undefined;
     this.initData();
-    this.addCircle();
+
     //删除元素
     document.addEventListener("click", this.onMouseClick, false);
-    const that = this
-    animate();
-    function animate() {
-      that.animateCircle();
-      requestAnimationFrame(animate); 
+    const that = this;
+    animate = function () {
+      !params.pause && that.animateCircle();
+      requestAnimationFrame(animate);
       stats.update();
       renderer.clear();
       camera.layers.set(1);
@@ -45,17 +49,21 @@ class App {
       renderer.clearDepth();
       camera.layers.set(0);
       renderer.render(scene, camera);
-    }
+    };
+    animate();
   }
   initData() {
+    this.loadeModels = { count: 0, finished: false };
+    xRayScene = new THREE.Scene();
+    xRayScene.matrixAutoUpdate = false;
     this.createModels = {};
     this.circleParams = {
       maxLevel: 10, //总体最大缩放级别
       currentDelay: 3,
-      currentLevel1: 0.1, //光圈的缩放级别
-      currentLevel2: 0.1,
-      currentSpeed1: 0.01, //光圈的变化速度
-      currentSpeed2: 0.01,
+      currentLevel1: 0.3, //光圈的缩放级别
+      currentLevel2: 0.3,
+      currentSpeed1: 0.03, //光圈的变化速度
+      currentSpeed2: 0.03,
       opacity: 1, //整体透明度
       startDelay: 0, //延迟启动计时
       startDelayFlag: 5, //延迟启动的界限
@@ -67,16 +75,19 @@ class App {
     this.initCamera();
     this.initScene();
     this.initModel();
+    this.addCircle();
+
+    this.xRayComposer.render();
     this.initControls();
     this.initGui();
     this.initStats();
-    this.onWindowResize()
+    this.onWindowResize();
   }
   //添加光圈
   addCircle() {
     let { Group, Mesh, RingBufferGeometry, ShaderMaterial } = THREE;
-    this.xRayScene = new THREE.Camera();
-    let xRayRenderScene = new RenderPass(this.xRayScene, camera);
+
+    let xRayRenderScene = new RenderPass(xRayScene, camera);
     this.xRayComposer = new EffectComposer(renderer);
     this.xRayComposer.renderToScreen = false;
     this.xRayComposer.addPass(xRayRenderScene);
@@ -130,16 +141,18 @@ class App {
           "}",
         ].join("\n"),
         transparent: true,
+        side: THREE.DoubleSide,
       })
     );
-    this.circle1lod = new THREE.Group();
-    this.circle2lod = new THREE.Group();
+    this.circle1lod = new Group();
+    this.circle2lod = new Group();
     this.circle1lod.add(circle1);
-    let lowCircle1 = new THREE.Mesh(
+    let lowCircle1 = new Mesh(
       new THREE.RingBufferGeometry(inner, outer + 1, 40, 10, 0),
       new THREE.MeshBasicMaterial({
         map: texture1,
         transparent: true,
+        side: THREE.DoubleSide,
       })
     );
     this.circle1lod.add(lowCircle1);
@@ -159,7 +172,7 @@ class App {
     const depthProjMatrix = this.depthCamera.projectionMatrix.multiply(
       depthMatrixWorldInverse
     );
-    let circleMat = new THREE.ShaderMaterial({
+    let circleMat = new ShaderMaterial({
       uniforms: {
         uDepthProjMatrixInverse: {
           value: depthProjMatrixInverse,
@@ -186,8 +199,7 @@ class App {
           value: 1,
         },
       },
-      vertexShader:
-      [
+      vertexShader: [
         "varying highp vec2 vUv;",
         "varying vec2 vScreenPos;",
         "void main() {",
@@ -210,7 +222,7 @@ class App {
       side: THREE.DoubleSide,
     });
     let circle2 = new Mesh(
-      new RingBufferGeometry(outer+19, outer+20, 3000, 10, 0),
+      new RingBufferGeometry(outer + 19, outer + 20, 3000, 10, 0),
       circleMat
     );
     let lowCircle2 = new Mesh(
@@ -218,6 +230,7 @@ class App {
       new THREE.MeshBasicMaterial({
         map: texture2,
         transparent: true,
+        side: THREE.DoubleSide,
       })
     );
     let smoothCircle2 = new Mesh(
@@ -225,23 +238,20 @@ class App {
       new THREE.MeshBasicMaterial({
         map: texture2,
         transparent: true,
+        side: THREE.DoubleSide,
       })
     );
     // 旋转贴图
-    circle1.rotateX(Math.PI/2);
-    lowCircle1.rotateX(Math.PI/2);
-    circle2.rotateX(Math.PI/2); // 细亮线
-    lowCircle2.rotateX(Math.PI/2);
-    smoothCircle2.rotateX(Math.PI/2);
+    circle1.rotateX(Math.PI / 2);
+    lowCircle1.rotateX(Math.PI / 2);
+    circle2.rotateX(Math.PI / 2); // 细亮线
+    lowCircle2.rotateX(Math.PI / 2);
+    smoothCircle2.rotateX(Math.PI / 2);
 
-    circle1.position.setY(-100);
-    lowCircle1.position.setY(-99);
-    lowCircle2.position.setY(-100);
-
-    circle2.position.setY(0)
-    circle2.position.setX(0)
-    circle2.position.setZ(0)
-    smoothCircle2.position.setY(-99)
+    circle1.position.setY(100);
+    lowCircle1.position.setY(99);
+    lowCircle2.position.setY(100);
+    smoothCircle2.position.setY(99);
 
     this.circle2lod.add(circle2);
     this.circle2lod.add(lowCircle2);
@@ -262,7 +272,6 @@ class App {
     group.add(this.circle1lod);
     group.add(this.circle2lod);
     group.name = "circleGroup";
-
     this.createModels["circleGroup"] = group;
     scene.add(group);
   }
@@ -396,17 +405,6 @@ class App {
     composer.setSize(window.innerWidth, window.innerHeight);
     composer.addPass(renderScene);
     composer.addPass(bloomPass);
-    // let light = new DirectionalLight(0xffffff);
-    // light.position.set(0, 20, 10);
-
-    // light.castShadow = true;
-    // light.shadow.camera.top = 10;
-    // light.shadow.camera.bottom = -10;
-    // light.shadow.camera.left = -10;
-    // light.shadow.camera.right = 10;
-
-    // light.castShadow = true;
-    // scene.add(light);
   }
   //随机生成颜色
   randomColor() {
@@ -442,13 +440,14 @@ class App {
     let helper = new THREE.AxesHelper(10);
     scene.add(helper);
     // 地板
-    let mesh = new THREE.Mesh(
-      new THREE.PlaneBufferGeometry(4000, 4000),
-      new THREE.MeshPhongMaterial({ color: 0x6e6e6e, depthWrite: false })
-    );
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+    // let mesh = new THREE.Mesh(
+    //   new THREE.PlaneBufferGeometry(4000, 4000),
+    //   new THREE.MeshPhongMaterial({ color: 0x6e6e6e, depthWrite: false })
+    // );
+    // mesh.rotation.x = -Math.PI / 2;
+    // mesh.receiveShadow = true;
+    // scene.add(mesh);
+
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
     grid.material.opacity = 0.3;
@@ -458,20 +457,44 @@ class App {
     // 加入模型
     for (let i = 0; i < 200; i++) {
       let cube = new CubeGeometry(100, Math.random() * 100, 100);
-      let material = new THREE.MeshBasicMaterial({
-        color: this.randomColor(),
-        transparent: true,
-        opacity: 1,
-      });
-      let mesh = new THREE.Mesh(cube, material);
-      mesh.layers.enable(1);
-      mesh.position.x = 2000 * (2.0 * Math.random() - 1.0);
-      mesh.position.z = 2000 * (2.0 * Math.random() - 1.0);
-      // 辉光
-
-      mesh.updateMatrix();
-      scene.add(mesh);
+      let position = {
+        x: 2000 * (2.0 * Math.random() - 1.0),
+        z: 2000 * (2.0 * Math.random() - 1.0),
+      };
+      scene.add(
+        this.newXrayMesh(
+          cube,
+          new THREE.MeshBasicMaterial({
+            color: this.randomColor(),
+            transparent: true,
+            // wireframe:true,
+            opacity: 1,
+          }),
+          position
+        )
+      );
+      xRayScene.add(
+        this.newXrayMesh(
+          cube,
+          new THREE.MeshBasicMaterial({
+            color: this.randomColor(),
+            transparent: true,
+            wireframe: true,
+            opacity: 1,
+          }),
+          position
+        )
+      );
+      console.log(xRayScene);
     }
+  }
+  newXrayMesh(cube, material, position) {
+    let mesh = new THREE.Mesh(cube, material);
+    mesh.layers.enable(1);
+    mesh.position.x = position.x;
+    mesh.position.z = position.z;
+    mesh.updateMatrix();
+    return mesh;
   }
   // 初始化摄像机控制
   initControls() {
@@ -526,6 +549,7 @@ class App {
         );
         renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
       });
+    gui.add(params, "pause");
   }
   // 初始化左上角fps性能参数
   initStats() {

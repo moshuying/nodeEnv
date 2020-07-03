@@ -1,0 +1,11 @@
+varying vec2 vScreenPos;,
+varying highp vec2 vUv;,
+uniform sampler2D uTexture;,
+uniform sampler2D uXRayTexture;,
+uniform vec3 uColor;,
+uniform float uTransparent; + void main() {,
+vec4 xRayTex = texture2D( uXRayTexture, vScreenPos );,
+vec4 tex = texture2D( uTexture, vUv );,
+vec4 finalColor = (xRayTex.w+.1)*vec4(uColor,1)+tex;,
+gl_FragColor = vec4(finalColor.xyz,finalColor.w*uTransparent);,
+}
