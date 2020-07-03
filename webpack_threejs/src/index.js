@@ -36,8 +36,19 @@ class App {
     this.xRayComposer = undefined;
     this.initData();
 
-    //删除元素
+    //高亮元素
     document.addEventListener("click", this.onMouseClick, false);
+    // 空格键暂停播放
+    document.body.onkeydown = function (e) {
+      if (e.keyCode === 32) {
+        document
+          .querySelector(
+            "body > div.dg.ac > div > ul > li.cr.boolean > div > span"
+          )
+          .click();
+      }
+    };
+    window.onresize=this.onWindowResize
     const that = this;
     animate = function () {
       !params.pause && that.animateCircle();
@@ -199,16 +210,26 @@ class App {
           value: 1,
         },
       },
-      vertexShader: [
-        "varying highp vec2 vUv;",
-        "varying vec2 vScreenPos;",
-        "void main() {",
-        "gl_Position = projectionMatrix * modelViewMatrix * vec4( position.x,position.y+1.0,position.z, 1.0 );",
-        "vScreenPos.x = (gl_Position.x/gl_Position.w)/2.0 + 0.5;",
-        "vScreenPos.y = (gl_Position.y/gl_Position.w)/2.0 + 0.5;",
-        "vUv = uv;",
-        "}",
-      ].join("\n"),
+      vertexShader:
+        "uniform mat4 uDepthProjMatrixInverse;\n" +
+        "    uniform mat4 uDepthMatrixWorldInverse;\n" +
+        "    uniform mat4 uDepthProjMatrix;\n" +
+        "    uniform mat4 uDepthMatrixWorld;\n" +
+        "    uniform sampler2D uDepthMap;\n" +
+        "    varying vec2 vUv;\n" +
+        "\n" +
+        "    void main() {\n" +
+        "        vec4 depthPos = uDepthProjMatrix  * modelMatrix * vec4( position, 1.0 );\n" +
+        "        vec2 depthScreenPos;\n" +
+        "        depthScreenPos.x = (depthPos.x/depthPos.w)*.5+.5;\n" +
+        "        depthScreenPos.y = (depthPos.y/depthPos.w)*.5+.5;\n" +
+        "        float circleDepth = (depthPos.z/depthPos.w)*.5+.5;\n" +
+        "        float depth = texture2D(uDepthMap,depthScreenPos).x;\n" +
+        "        depth-=.02;\n" +
+        "        vUv = uv;\n" +
+        "        vec4 newPos = uDepthMatrixWorld*vec4(depthPos.x,depthPos.y,((depth-.5)/.5)*depthPos.w,depthPos.w);\n" +
+        "        gl_Position = projectionMatrix * viewMatrix * vec4( newPos );\n" +
+        "    }",
       fragmentShader:
         "    uniform sampler2D uDepthMap;\n" +
         "    uniform vec3 uCircleColor;\n" +
@@ -347,8 +368,9 @@ class App {
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.setClearColor(0xffffff);
 
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.toneMapping = THREE.ReinhardToneMapping;
+    // 灰色的东西 配合点光源模拟发光
+    // renderer.setPixelRatio(window.devicePixelRatio);
+    // renderer.toneMapping = THREE.ReinhardToneMapping;
 
     renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
@@ -362,7 +384,7 @@ class App {
       0.1,
       100000
     );
-    camera.position.set(0, 400, 0);
+    camera.position.set(0, 800, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
   // 初始化场景
@@ -478,16 +500,16 @@ class App {
           cube,
           new THREE.MeshBasicMaterial({
             color: this.randomColor(),
-            transparent: true,
+            // transparent: true,
             wireframe: true,
-            opacity: 1,
+            opacity: 0.3,
           }),
           position
         )
       );
-      console.log(xRayScene);
     }
   }
+  // 同步创建模型
   newXrayMesh(cube, material, position) {
     let mesh = new THREE.Mesh(cube, material);
     mesh.layers.enable(1);
@@ -562,7 +584,8 @@ class App {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
     let intersects = raycaster.intersectObjects(scene.children);
-    intersects.length >= 1 && scene.remove(intersects[0].object);
+    // intersects.length >= 1 && scene.remove(intersects[0].object);
+    intersects.length >= 1 && intersects[0].object.material.color.set(0xffffff);
   }
   onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
