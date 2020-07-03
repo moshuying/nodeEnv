@@ -24,7 +24,9 @@ let renderer,
   },
   composer,
   bloomPass;
-
+//声明raycaster和mouse变量 相应快一点可以把变量提出去
+let raycaster = new THREE.Raycaster();
+let mouse = new THREE.Vector2();
 class App {
   constructor() {
     this.initData();
@@ -34,7 +36,6 @@ class App {
     const that = this
     animate();
     function animate() {
-      
       that.animateCircle();
       requestAnimationFrame(animate); 
       stats.update();
@@ -186,25 +187,16 @@ class App {
         },
       },
       vertexShader:
-        "uniform mat4 uDepthProjMatrixInverse;\n" +
-        "    uniform mat4 uDepthMatrixWorldInverse;\n" +
-        "    uniform mat4 uDepthProjMatrix;\n" +
-        "    uniform mat4 uDepthMatrixWorld;\n" +
-        "    uniform sampler2D uDepthMap;\n" +
-        "    varying vec2 vUv;\n" +
-        "\n" +
-        "    void main() {\n" +
-        "        vec4 depthPos = uDepthProjMatrix  * modelMatrix * vec4( position, 1.0 );\n" +
-        "        vec2 depthScreenPos;\n" +
-        "        depthScreenPos.x = (depthPos.x/depthPos.w)*.5+.5;\n" +
-        "        depthScreenPos.y = (depthPos.y/depthPos.w)*.5+.5;\n" +
-        "        float circleDepth = (depthPos.z/depthPos.w)*.5+.5;\n" +
-        "        float depth = texture2D(uDepthMap,depthScreenPos).x;\n" +
-        "        depth-=.02;\n" +
-        "        vUv = uv;\n" +
-        "        vec4 newPos = uDepthMatrixWorld*vec4(depthPos.x,depthPos.y,((depth-.5)/.5)*depthPos.w,depthPos.w);\n" +
-        "        gl_Position = projectionMatrix * viewMatrix * vec4( newPos );\n" +
-        "    }",
+      [
+        "varying highp vec2 vUv;",
+        "varying vec2 vScreenPos;",
+        "void main() {",
+        "gl_Position = projectionMatrix * modelViewMatrix * vec4( position.x,position.y+1.0,position.z, 1.0 );",
+        "vScreenPos.x = (gl_Position.x/gl_Position.w)/2.0 + 0.5;",
+        "vScreenPos.y = (gl_Position.y/gl_Position.w)/2.0 + 0.5;",
+        "vUv = uv;",
+        "}",
+      ].join("\n"),
       fragmentShader:
         "    uniform sampler2D uDepthMap;\n" +
         "    uniform vec3 uCircleColor;\n" +
@@ -218,7 +210,7 @@ class App {
       side: THREE.DoubleSide,
     });
     let circle2 = new Mesh(
-      new RingBufferGeometry(outer + 19, outer + 20, 30, 80, 0),
+      new RingBufferGeometry(outer+19, outer+20, 3000, 10, 0),
       circleMat
     );
     let lowCircle2 = new Mesh(
@@ -242,17 +234,18 @@ class App {
     lowCircle2.rotateX(Math.PI/2);
     smoothCircle2.rotateX(Math.PI/2);
 
-    this.circle2lod.add(circle2);
-    this.circle2lod.add(lowCircle2);
-
-    this.circle2lod.add(smoothCircle2);
-
     circle1.position.setY(-100);
     lowCircle1.position.setY(-99);
     lowCircle2.position.setY(-100);
 
-    circle2.position.setY(-100)
+    circle2.position.setY(0)
+    circle2.position.setX(0)
+    circle2.position.setZ(0)
     smoothCircle2.position.setY(-99)
+
+    this.circle2lod.add(circle2);
+    this.circle2lod.add(lowCircle2);
+    this.circle2lod.add(smoothCircle2);
 
     circle1.name = "innerCircle";
     lowCircle1.name = "lowInnerCircle";
@@ -287,6 +280,7 @@ class App {
       } else {
         //继续动画
         this.circleParams.currentLevel1 += this.circleParams.currentSpeed1;
+        // raycaster.setFromCamera({x:1,y:1},camera)
         if (
           this.circleParams.currentLevel1 >=
           this.circleParams.maxLevel -
@@ -359,7 +353,7 @@ class App {
       0.1,
       100000
     );
-    camera.position.set(0, -400, 200);
+    camera.position.set(0, 400, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
   // 初始化场景
@@ -540,9 +534,6 @@ class App {
   }
   // 鼠标点击模型时候的事件 （删除）
   onMouseClick(event) {
-    //声明raycaster和mouse变量 相应快一点可以把变量提出去
-    let raycaster = new THREE.Raycaster();
-    let mouse = new THREE.Vector2();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
