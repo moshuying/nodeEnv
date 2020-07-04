@@ -11,7 +11,7 @@ import { BackSide } from "three";
 
 let renderer,
   camera,
-  scene,
+  scene = new THREE.Scene(),
   gui,
   stats,
   params = {
@@ -24,10 +24,12 @@ let renderer,
   windowSize = {
     multiplyingPower: 1,
   },
-  composer,
-  bloomPass,
   animate,
-  xRayScene;
+  xRayScene = new THREE.Scene(),
+  uniforms1 = { time: { value: 1.0 } },
+  uniforms2 = { ratio: { value: 0.0 } };
+
+let clock = new THREE.Clock();
 //声明raycaster和mouse变量 响应快一点可以把变量提出去
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
@@ -35,38 +37,25 @@ class App {
   constructor() {
     this.xRayComposer = undefined;
     this.initData();
+    this.domElement();
 
-    //高亮元素
-    document.addEventListener("click", this.onMouseClick, false);
-    // 空格键暂停播放
-    document.body.onkeydown = function (e) {
-      if (e.keyCode === 32) {
-        document
-          .querySelector(
-            "body > div.dg.ac > div > ul > li.cr.boolean > div > span"
-          )
-          .click();
-      }
-    };
-    window.onresize=this.onWindowResize
     const that = this;
     animate = function () {
-      !params.pause && that.animateCircle();
-      requestAnimationFrame(animate);
-      stats.update();
-      renderer.clear();
-      camera.layers.set(1);
-      composer.render();
-      renderer.clearDepth();
-      camera.layers.set(0);
       renderer.render(scene, camera);
+      stats.update();
+      uniforms1.time.value += clock.getDelta() * 5;
+      !params.pause &&
+        (that.animateCircle(),
+        uniforms2.ratio.value > 3
+          ? (uniforms2.ratio.value = 0)
+          : (uniforms2.ratio.value += 0.00702));
+      requestAnimationFrame(animate);
     };
     animate();
   }
   initData() {
     this.loadeModels = { count: 0, finished: false };
-    xRayScene = new THREE.Scene();
-    xRayScene.matrixAutoUpdate = false;
+
     this.createModels = {};
     this.circleParams = {
       maxLevel: 10, //总体最大缩放级别
@@ -147,7 +136,7 @@ class App {
           "uniform float uTransparent;" + "void main() {",
           "vec4 xRayTex = texture2D( uXRayTexture, vScreenPos );",
           "vec4 tex = texture2D( uTexture, vUv );",
-          "vec4 finalColor = (xRayTex.w+.1)*vec4(uColor,1)+tex;",
+          "vec4 finalColor = (xRayTex.w)*vec4(uColor,-1)+tex;",
           "gl_FragColor = vec4(finalColor.xyz,finalColor.w*uTransparent);",
           "}",
         ].join("\n"),
@@ -210,26 +199,26 @@ class App {
           value: 1,
         },
       },
-      vertexShader:
-        "uniform mat4 uDepthProjMatrixInverse;\n" +
-        "    uniform mat4 uDepthMatrixWorldInverse;\n" +
-        "    uniform mat4 uDepthProjMatrix;\n" +
-        "    uniform mat4 uDepthMatrixWorld;\n" +
-        "    uniform sampler2D uDepthMap;\n" +
-        "    varying vec2 vUv;\n" +
-        "\n" +
-        "    void main() {\n" +
-        "        vec4 depthPos = uDepthProjMatrix  * modelMatrix * vec4( position, 1.0 );\n" +
-        "        vec2 depthScreenPos;\n" +
-        "        depthScreenPos.x = (depthPos.x/depthPos.w)*.5+.5;\n" +
-        "        depthScreenPos.y = (depthPos.y/depthPos.w)*.5+.5;\n" +
-        "        float circleDepth = (depthPos.z/depthPos.w)*.5+.5;\n" +
-        "        float depth = texture2D(uDepthMap,depthScreenPos).x;\n" +
-        "        depth-=.02;\n" +
-        "        vUv = uv;\n" +
-        "        vec4 newPos = uDepthMatrixWorld*vec4(depthPos.x,depthPos.y,((depth-.5)/.5)*depthPos.w,depthPos.w);\n" +
-        "        gl_Position = projectionMatrix * viewMatrix * vec4( newPos );\n" +
-        "    }",
+      // vertexShader:
+      //   "uniform mat4 uDepthProjMatrixInverse;\n" +
+      //   "    uniform mat4 uDepthMatrixWorldInverse;\n" +
+      //   "    uniform mat4 uDepthProjMatrix;\n" +
+      //   "    uniform mat4 uDepthMatrixWorld;\n" +
+      //   "    uniform sampler2D uDepthMap;\n" +
+      //   "    varying vec2 vUv;\n" +
+      //   "\n" +
+      //   "    void main() {\n" +
+      //   "        vec4 depthPos = uDepthProjMatrix  * modelMatrix * vec4( position, 1.0 );\n" +
+      //   "        vec2 depthScreenPos;\n" +
+      //   "        depthScreenPos.x = (depthPos.x/depthPos.w)*.5+.5;\n" +
+      //   "        depthScreenPos.y = (depthPos.y/depthPos.w)*.5+.5;\n" +
+      //   "        float circleDepth = (depthPos.z/depthPos.w)*.5+.5;\n" +
+      //   "        float depth = texture2D(uDepthMap,depthScreenPos).x;\n" +
+      //   "        depth-=.02;\n" +
+      //   "        vUv = uv;\n" +
+      //   "        vec4 newPos = uDepthMatrixWorld*vec4(depthPos.x,depthPos.y,((depth-.5)/.5)*depthPos.w,depthPos.w);\n" +
+      //   "        gl_Position = projectionMatrix * viewMatrix * vec4( newPos );\n" +
+      //   "    }",
       fragmentShader:
         "    uniform sampler2D uDepthMap;\n" +
         "    uniform vec3 uCircleColor;\n" +
@@ -307,6 +296,7 @@ class App {
         this.circleParams.currentLevel2 = 0.001;
         this.circleParams.opacity = 1;
         this.circleParams.startDelay = 0;
+        uniforms2.ratio.value = 0;
       } else {
         //继续动画
         this.circleParams.currentLevel1 += this.circleParams.currentSpeed1;
@@ -320,8 +310,8 @@ class App {
         }
         //延迟启动内圈
         this.circleParams.currentLevel2 += this.circleParams.currentSpeed2;
-        if (this.circleParams.currentLevel1 >= this.circleParams.currentDelay) {
-        }
+        // if (this.circleParams.currentLevel1 >= this.circleParams.currentDelay) {
+        // }
       }
       this.createModels["outerCircle"].scale.setScalar(
         this.circleParams.currentLevel1
@@ -368,10 +358,6 @@ class App {
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.setClearColor(0xffffff);
 
-    // 灰色的东西 配合点光源模拟发光
-    // renderer.setPixelRatio(window.devicePixelRatio);
-    // renderer.toneMapping = THREE.ReinhardToneMapping;
-
     renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
     renderer.autoClear = false;
@@ -384,7 +370,7 @@ class App {
       0.1,
       100000
     );
-    camera.position.set(0, 800, 0);
+    camera.position.set(1600, 1200, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
   // 初始化场景
@@ -403,30 +389,13 @@ class App {
       "pz.jpg",
       "nz.jpg",
     ]);
-    scene = new THREE.Scene();
+
     scene.background = cubeTexture;
 
     // 加光源
-    scene.add(new THREE.AmbientLight(0x404040));
-    let pointLight = new THREE.PointLight(0xffffff, 1);
-    camera.add(pointLight);
-
-    const renderScene = new RenderPass(scene, camera);
-    bloomPass = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      1.5,
-      0.4,
-      0.85
-    );
-    bloomPass.renderToScreen = true;
-    bloomPass.threshold = params.bloomThreshold;
-    bloomPass.strength = params.bloomStrength;
-    bloomPass.radius = params.bloomRadius;
-
-    composer = new EffectComposer(renderer);
-    composer.setSize(window.innerWidth, window.innerHeight);
-    composer.addPass(renderScene);
-    composer.addPass(bloomPass);
+    let light = new THREE.AmbientLight(0xff0000);
+    light.position.set(100, 100, 200);
+    scene.add(light);
   }
   //随机生成颜色
   randomColor() {
@@ -462,13 +431,42 @@ class App {
     let helper = new THREE.AxesHelper(10);
     scene.add(helper);
     // 地板
-    // let mesh = new THREE.Mesh(
-    //   new THREE.PlaneBufferGeometry(4000, 4000),
-    //   new THREE.MeshPhongMaterial({ color: 0x6e6e6e, depthWrite: false })
-    // );
-    // mesh.rotation.x = -Math.PI / 2;
-    // mesh.receiveShadow = true;
-    // scene.add(mesh);
+    let mesh = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry(4000, 4000),
+      new THREE.RawShaderMaterial({
+        uniforms: uniforms2,
+        vertexShader: [
+          "precision mediump float;",
+          "precision mediump int;",
+          "uniform mat4 modelViewMatrix;",
+          "uniform mat4 projectionMatrix;",
+          "attribute vec3 position;",
+          "varying vec3 vPosition;",
+          "void main() {",
+          "  vPosition = position;",
+          "  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+          "}",
+        ].join("\n"),
+        fragmentShader: [
+          "precision mediump float;",
+          "precision mediump int;",
+          "uniform float ratio;",
+          "varying vec3 vPosition;",
+          "void main() {",
+          "  vec3 center = vec3( 0.0,0.0,0.0 );",
+          "  float dist=  distance(vPosition,center)/2000.0;",
+          "  dist = clamp(dist,0.0,1.0);",
+          "  float color = 1.0-dist ;",
+          "  gl_FragColor =  vec4( ratio*0.33, color*ratio*0.7,color*ratio*0.7,dist);",
+          "}",
+        ].join("\n"),
+        side: THREE.DoubleSide,
+      })
+      // new THREE.MeshPhongMaterial({color: 0x9FDB9F, transparent: false, opacity: 0.8})
+    );
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
 
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
@@ -476,22 +474,55 @@ class App {
     grid.material.transparent = true;
     scene.add(grid);
 
-    // 加入模型
+    // 加入模型 100个方盒子 100个碗
     for (let i = 0; i < 200; i++) {
-      let cube = new CubeGeometry(100, Math.random() * 100, 100);
-      let position = {
-        x: 2000 * (2.0 * Math.random() - 1.0),
-        z: 2000 * (2.0 * Math.random() - 1.0),
-      };
+      let cube = new THREE[i > 100 ? "CubeGeometry" : "CylinderGeometry"](
+        100,
+        Math.random() * 100,
+        100
+      );
+      cube.uvsNeedUpdate = true;
+      cube.elementsNeedUpdate = true;
+      cube.colorsNeedUpdate = true;
+      let position = new THREE.Vector3(
+        2000 * (2.0 * Math.random() - 1.0),
+        0,
+        2000 * (2.0 * Math.random() - 1.0)
+      );
+      let shaderMaterial = new THREE.ShaderMaterial({
+        uniforms: uniforms1,
+        vertexShader: [
+          "varying vec2 vUv;",
+          "void main(){",
+          "vUv = uv;",
+          "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+          "gl_Position = projectionMatrix * mvPosition;",
+          "}",
+        ].join("\n"),
+        fragmentShader: [
+          "uniform float time;",
+          "varying vec2 vUv;",
+          "void main( void ) {",
+          "vec2 position = - 1.0 + 2.0 * vUv;",
+          "float red = abs( sin( position.x * position.y + time / 5.0 ) );",
+          "float green = abs( sin( position.x * position.y + time / 4.0 ) );",
+          "float blue = abs( sin( position.x * position.y + time / 3.0 ) );",
+          "gl_FragColor = vec4(red, 2, 2,0.7);",
+          "}",
+        ].join("\n"),
+        transparent: true,
+        side: THREE.DoubleSide,
+      });
       scene.add(
         this.newXrayMesh(
           cube,
-          new THREE.MeshBasicMaterial({
-            color: this.randomColor(),
-            transparent: true,
-            // wireframe:true,
-            opacity: 1,
-          }),
+          shaderMaterial,
+          // new THREE.MeshBasicMaterial({
+          //   color: this.randomColor(),
+          //   transparent: true,
+          //   // wireframe:true,
+          //   opacity: 1,
+          // }),
           position
         )
       );
@@ -502,18 +533,43 @@ class App {
             color: this.randomColor(),
             // transparent: true,
             wireframe: true,
-            opacity: 0.3,
+            opacity: 0,
           }),
           position
         )
       );
     }
+    this.initLine();
+  }
+  // 在原点创建一个红色的线条
+  initLine() {
+    // 对于线条来说，能使用的材质只有LineBasicMaterial 或者 LineDashedMaterial。
+    let material = new THREE.LineDashedMaterial({ color: 0xb94646 }); // 红线
+    // 有了材质后，需要顶点几何 geometry  推荐使用BufferGeometry 性能更好
+    let geometry2 = new THREE.Geometry();
+    let fn = (x, y, z) => {
+      return new THREE.Vector3(x, y, z);
+    };
+    [
+      fn(0, 0, 0),
+      fn(100, 0, 0),
+      fn(0, 0, 100),
+      fn(-100, 0, 0),
+      fn(0, 0, -100),
+      fn(100, 0, 0),
+      fn(0, 100, 0),
+    ].forEach((el) => geometry2.vertices.push(el));
+    fn = null;
+    // 线是画在每一对连续的顶点之间的，而不是在第一个顶点和最后一个顶点之间绘制线条，线条并未闭合
+    let line = new THREE.Line(geometry2, material);
+    scene.add(line);
   }
   // 同步创建模型
   newXrayMesh(cube, material, position) {
     let mesh = new THREE.Mesh(cube, material);
     mesh.layers.enable(1);
     mesh.position.x = position.x;
+    mesh.position.y = position.y;
     mesh.position.z = position.z;
     mesh.updateMatrix();
     return mesh;
@@ -542,24 +598,6 @@ class App {
   // 初始化右上角参数调整
   initGui() {
     gui = new dat.GUI();
-    gui.add(params, "exposure", 0.1, 2).onChange(function (value) {
-      renderer.toneMappingExposure = Math.pow(value, 4.0);
-    });
-
-    gui.add(params, "bloomThreshold", 0.0, 1.0).onChange(function (value) {
-      bloomPass.threshold = Number(value);
-    });
-
-    gui.add(params, "bloomStrength", 0.0, 3.0).onChange(function (value) {
-      bloomPass.strength = Number(value);
-    });
-
-    gui
-      .add(params, "bloomRadius", 0.0, 1.0)
-      .step(0.01)
-      .onChange(function (value) {
-        bloomPass.radius = Number(value);
-      });
 
     gui
       .add(windowSize, "multiplyingPower", 0.1, 2)
@@ -595,6 +633,21 @@ class App {
       window.innerHeight * windowSize.multiplyingPower
     );
     renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+  }
+  domElement() {
+    window.onresize = this.onWindowResize;
+    //高亮元素
+    // document.addEventListener("click", this.onMouseClick, false);
+    // 空格键暂停播放
+    document.body.onkeydown = function (e) {
+      if (e.keyCode === 32) {
+        document
+          .querySelector(
+            "body > div.dg.ac > div > ul > li.cr.boolean > div > span"
+          )
+          .click();
+      }
+    };
   }
 }
 new App();

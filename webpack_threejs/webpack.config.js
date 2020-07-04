@@ -6,7 +6,7 @@ module.exports = {
   //输出设置
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
   },
   //调试工具
   // devtool: "source-map", // 关了这玩意免得打包出来还带个map
