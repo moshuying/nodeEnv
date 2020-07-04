@@ -9,8 +9,15 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { BackSide } from "three";
 
-let renderer,
-  camera,
+let renderer = new THREE.WebGLRenderer({ antialias: true }),
+  xRayRenderScene,
+  xRayComposer,
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100000
+  ),
   scene = new THREE.Scene(),
   gui,
   stats,
@@ -20,6 +27,9 @@ let renderer,
     bloomThreshold: 0,
     bloomRadius: 0,
     pause: false,
+    pauseXRay: false,
+    floorBoard: false,
+    cubeShader: false,
   },
   windowSize = {
     multiplyingPower: 1,
@@ -29,18 +39,72 @@ let renderer,
   uniforms1 = { time: { value: 1.0 } },
   uniforms2 = { ratio: { value: 0.0 } };
 
+let floorBoard,
+  floorBoardShaderMaterial = new THREE.RawShaderMaterial({
+    uniforms: uniforms2,
+    vertexShader: [
+      "precision mediump float;",
+      "precision mediump int;",
+      "uniform mat4 modelViewMatrix;",
+      "uniform mat4 projectionMatrix;",
+      "attribute vec3 position;",
+      "varying vec3 vPosition;",
+      "void main() {",
+      "  vPosition = position;",
+      "  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+      "}",
+    ].join("\n"),
+    fragmentShader: [
+      "precision mediump float;",
+      "precision mediump int;",
+      "uniform float ratio;",
+      "varying vec3 vPosition;",
+      "void main() {",
+      "  vec3 center = vec3( 0.0,0.0,0.0 );",
+      "  float dist=  distance(vPosition,center)/2000.0;",
+      "  dist = clamp(dist,0.0,1.0);",
+      "  float color = 1.0-dist ;",
+      "  gl_FragColor =  vec4( ratio*0.33, color*ratio*0.7,color*ratio*0.7,dist);",
+      "}",
+    ].join("\n"),
+    side: THREE.DoubleSide,
+  });
+let sceneShaderMaterial = new THREE.ShaderMaterial({
+  uniforms: uniforms1,
+  vertexShader: [
+    "varying vec2 vUv;",
+    "void main(){",
+    "vUv = uv;",
+    "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
+    "gl_Position = projectionMatrix * mvPosition;",
+    "}",
+  ].join("\n"),
+  fragmentShader: [
+    "uniform float time;",
+    "varying vec2 vUv;",
+    "void main( void ) {",
+    "vec2 position = - 1.0 + 2.0 * vUv;",
+    "float red = abs( sin( position.x * position.y + time / 5.0 ) );",
+    "float green = abs( sin( position.x * position.y + time / 4.0 ) );",
+    "float blue = abs( sin( position.x * position.y + time / 3.0 ) );",
+    "gl_FragColor = vec4(red, 1, 2,0.7);",
+    "}",
+  ].join("\n"),
+  transparent: true,
+  side: THREE.DoubleSide,
+});
 let clock = new THREE.Clock();
 //声明raycaster和mouse变量 响应快一点可以把变量提出去
 let raycaster = new THREE.Raycaster();
 let mouse = new THREE.Vector2();
 class App {
   constructor() {
-    this.xRayComposer = undefined;
     this.initData();
     this.domElement();
 
     const that = this;
     animate = function () {
+      !params.pauseXRay && xRayComposer.render(); //渲染透视场景
       renderer.render(scene, camera);
       stats.update();
       uniforms1.time.value += clock.getDelta() * 5;
@@ -77,7 +141,6 @@ class App {
     this.initModel();
     this.addCircle();
 
-    this.xRayComposer.render();
     this.initControls();
     this.initGui();
     this.initStats();
@@ -86,11 +149,10 @@ class App {
   //添加光圈
   addCircle() {
     let { Group, Mesh, RingBufferGeometry, ShaderMaterial } = THREE;
-
-    let xRayRenderScene = new RenderPass(xRayScene, camera);
-    this.xRayComposer = new EffectComposer(renderer);
-    this.xRayComposer.renderToScreen = false;
-    this.xRayComposer.addPass(xRayRenderScene);
+    xRayRenderScene = new RenderPass(xRayScene, camera);
+    xRayComposer = new EffectComposer(renderer);
+    xRayComposer.renderToScreen = false;
+    xRayComposer.addPass(xRayRenderScene);
 
     let inner = 150;
     let outer = 170;
@@ -108,7 +170,7 @@ class App {
             value: texture1,
           },
           uXRayTexture: {
-            value: this.xRayComposer.renderTarget2.texture,
+            value: xRayComposer.renderTarget2.texture,
           },
           uColor: {
             value: new THREE.Color(0x9cf3ad),
@@ -199,26 +261,26 @@ class App {
           value: 1,
         },
       },
-      // vertexShader:
-      //   "uniform mat4 uDepthProjMatrixInverse;\n" +
-      //   "    uniform mat4 uDepthMatrixWorldInverse;\n" +
-      //   "    uniform mat4 uDepthProjMatrix;\n" +
-      //   "    uniform mat4 uDepthMatrixWorld;\n" +
-      //   "    uniform sampler2D uDepthMap;\n" +
-      //   "    varying vec2 vUv;\n" +
-      //   "\n" +
-      //   "    void main() {\n" +
-      //   "        vec4 depthPos = uDepthProjMatrix  * modelMatrix * vec4( position, 1.0 );\n" +
-      //   "        vec2 depthScreenPos;\n" +
-      //   "        depthScreenPos.x = (depthPos.x/depthPos.w)*.5+.5;\n" +
-      //   "        depthScreenPos.y = (depthPos.y/depthPos.w)*.5+.5;\n" +
-      //   "        float circleDepth = (depthPos.z/depthPos.w)*.5+.5;\n" +
-      //   "        float depth = texture2D(uDepthMap,depthScreenPos).x;\n" +
-      //   "        depth-=.02;\n" +
-      //   "        vUv = uv;\n" +
-      //   "        vec4 newPos = uDepthMatrixWorld*vec4(depthPos.x,depthPos.y,((depth-.5)/.5)*depthPos.w,depthPos.w);\n" +
-      //   "        gl_Position = projectionMatrix * viewMatrix * vec4( newPos );\n" +
-      //   "    }",
+      vertexShader:
+        "uniform mat4 uDepthProjMatrixInverse;\n" +
+        "    uniform mat4 uDepthMatrixWorldInverse;\n" +
+        "    uniform mat4 uDepthProjMatrix;\n" +
+        "    uniform mat4 uDepthMatrixWorld;\n" +
+        "    uniform sampler2D uDepthMap;\n" +
+        "    varying vec2 vUv;\n" +
+        "\n" +
+        "    void main() {\n" +
+        "        vec4 depthPos = uDepthProjMatrix  * modelMatrix * vec4( position, 1.0 );\n" +
+        "        vec2 depthScreenPos;\n" +
+        "        depthScreenPos.x = (depthPos.x/depthPos.w)*.5+.5;\n" +
+        "        depthScreenPos.y = (depthPos.y/depthPos.w)*.5+.5;\n" +
+        "        float circleDepth = (depthPos.z/depthPos.w)*.5+.5;\n" +
+        "        float depth = texture2D(uDepthMap,depthScreenPos).x;\n" +
+        "        depth-=.02;\n" +
+        "        vUv = uv;\n" +
+        "        vec4 newPos = uDepthMatrixWorld*vec4(depthPos.x,depthPos.y,((depth-.5)/.5)*depthPos.w,depthPos.w);\n" +
+        "        gl_Position = projectionMatrix * viewMatrix * vec4( newPos );\n" +
+        "    }",
       fragmentShader:
         "    uniform sampler2D uDepthMap;\n" +
         "    uniform vec3 uCircleColor;\n" +
@@ -350,52 +412,53 @@ class App {
   }
   // 初始化渲染器
   initRender() {
-    renderer = new THREE.WebGL1Renderer({ antialias: true, alpha: true });
     renderer.setSize(
       window.innerWidth * windowSize.multiplyingPower,
       window.innerHeight * windowSize.multiplyingPower
     );
-    renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.setClearColor(0xffffff);
+    //告诉渲染器需要阴影效果
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
+
+    renderer.setClearColor(0x000001, 1);
 
     renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
     renderer.autoClear = false;
+    renderer.debug.checkShaderErrors = false;
   }
   // 初始化摄像机
   initCamera() {
-    camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      100000
-    );
     camera.position.set(1600, 1200, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
   // 初始化场景
   initScene() {
     //给场景添加天空盒子纹理
-    let cubeTextureLoader = new THREE.CubeTextureLoader();
-    cubeTextureLoader.setPath(
-      "http://127.0.0.1:5500/src/demo/lib/textures/cube/skybox/"
-    );
-    //六张图片分别是朝前的（posz）、朝后的（negz）、朝上的（posy）、朝下的（negy）、朝右的（posx）和朝左的（negx）。
-    let cubeTexture = cubeTextureLoader.load([
-      "px.jpg",
-      "nx.jpg",
-      "py.jpg",
-      "ny.jpg",
-      "pz.jpg",
-      "nz.jpg",
-    ]);
-
-    scene.background = cubeTexture;
+    // let cubeTextureLoader = new THREE.CubeTextureLoader();
+    // cubeTextureLoader.setPath(
+    //   "http://127.0.0.1:5500/src/demo/lib/textures/cube/skybox/"
+    // );
+    // //六张图片分别是朝前的（posz）、朝后的（negz）、朝上的（posy）、朝下的（negy）、朝右的（posx）和朝左的（negx）。
+    // let cubeTexture = cubeTextureLoader.load([
+    //   "px.jpg",
+    //   "nx.jpg",
+    //   "py.jpg",
+    //   "ny.jpg",
+    //   "pz.jpg",
+    //   "nz.jpg",
+    // ]);
+    // scene.background = cubeTexture;
 
     // 加光源
-    let light = new THREE.AmbientLight(0xff0000);
-    light.position.set(100, 100, 200);
+    scene.add(new THREE.AmbientLight(0x000000));
+    let light = new THREE.PointLight(0xffffff);
+    light.position.set(25, 30, 10);
+    //告诉平行光需要开启阴影投射
+    light.castShadow = true;
     scene.add(light);
+
+    scene.autoUpdate = true;
   }
   //随机生成颜色
   randomColor() {
@@ -430,43 +493,19 @@ class App {
     // 坐标原点辅助
     let helper = new THREE.AxesHelper(10);
     scene.add(helper);
+
     // 地板
-    let mesh = new THREE.Mesh(
+    floorBoard = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(4000, 4000),
-      new THREE.RawShaderMaterial({
-        uniforms: uniforms2,
-        vertexShader: [
-          "precision mediump float;",
-          "precision mediump int;",
-          "uniform mat4 modelViewMatrix;",
-          "uniform mat4 projectionMatrix;",
-          "attribute vec3 position;",
-          "varying vec3 vPosition;",
-          "void main() {",
-          "  vPosition = position;",
-          "  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-          "}",
-        ].join("\n"),
-        fragmentShader: [
-          "precision mediump float;",
-          "precision mediump int;",
-          "uniform float ratio;",
-          "varying vec3 vPosition;",
-          "void main() {",
-          "  vec3 center = vec3( 0.0,0.0,0.0 );",
-          "  float dist=  distance(vPosition,center)/2000.0;",
-          "  dist = clamp(dist,0.0,1.0);",
-          "  float color = 1.0-dist ;",
-          "  gl_FragColor =  vec4( ratio*0.33, color*ratio*0.7,color*ratio*0.7,dist);",
-          "}",
-        ].join("\n"),
-        side: THREE.DoubleSide,
+      new THREE.MeshPhongMaterial({
+        color: 0x9fdb9f,
+        transparent: false,
+        opacity: 0.8,
       })
-      // new THREE.MeshPhongMaterial({color: 0x9FDB9F, transparent: false, opacity: 0.8})
     );
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+    floorBoard.rotation.x = -Math.PI / 2;
+    floorBoard.receiveShadow = true;
+    scene.add(floorBoard);
 
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
@@ -489,43 +528,7 @@ class App {
         0,
         2000 * (2.0 * Math.random() - 1.0)
       );
-      let shaderMaterial = new THREE.ShaderMaterial({
-        uniforms: uniforms1,
-        vertexShader: [
-          "varying vec2 vUv;",
-          "void main(){",
-          "vUv = uv;",
-          "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
-          "gl_Position = projectionMatrix * mvPosition;",
-          "}",
-        ].join("\n"),
-        fragmentShader: [
-          "uniform float time;",
-          "varying vec2 vUv;",
-          "void main( void ) {",
-          "vec2 position = - 1.0 + 2.0 * vUv;",
-          "float red = abs( sin( position.x * position.y + time / 5.0 ) );",
-          "float green = abs( sin( position.x * position.y + time / 4.0 ) );",
-          "float blue = abs( sin( position.x * position.y + time / 3.0 ) );",
-          "gl_FragColor = vec4(red, 2, 2,0.7);",
-          "}",
-        ].join("\n"),
-        transparent: true,
-        side: THREE.DoubleSide,
-      });
-      scene.add(
-        this.newXrayMesh(
-          cube,
-          shaderMaterial,
-          // new THREE.MeshBasicMaterial({
-          //   color: this.randomColor(),
-          //   transparent: true,
-          //   // wireframe:true,
-          //   opacity: 1,
-          // }),
-          position
-        )
-      );
+      scene.add(this.newXrayMesh(cube, sceneShaderMaterial, position));
       xRayScene.add(
         this.newXrayMesh(
           cube,
@@ -571,6 +574,7 @@ class App {
     mesh.position.x = position.x;
     mesh.position.y = position.y;
     mesh.position.z = position.z;
+    mesh.name = "cubeMesh";
     mesh.updateMatrix();
     return mesh;
   }
@@ -598,8 +602,8 @@ class App {
   // 初始化右上角参数调整
   initGui() {
     gui = new dat.GUI();
-
-    gui
+    let folder = gui.addFolder("renderer");
+    folder
       .add(windowSize, "multiplyingPower", 0.1, 2)
       .step(0.1)
       .onChange(function (value) {
@@ -609,7 +613,35 @@ class App {
         );
         renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
       });
-    gui.add(params, "pause");
+    folder.add(params, "pause");
+    folder.add(params, "pauseXRay");
+    gui.add(params, "floorBoard").onChange((el) => {
+      el && (floorBoard.material = floorBoardShaderMaterial);
+      !el &&
+        (floorBoard.material = new THREE.MeshPhongMaterial({
+          color: 0x9fdb9f,
+          transparent: false,
+          opacity: 0.8,
+        }));
+    });
+    gui.add(params, "cubeShader").onChange((el) => {
+      const fn = (shader) => {
+        scene.children.forEach((el) => {
+          if (el.name === "cubeMesh") {
+            el.material = shader;
+          }
+        });
+      };
+      el && fn(sceneShaderMaterial);
+      !el &&
+        fn(
+          new THREE.MeshBasicMaterial({
+            color: this.randomColor(),
+            transparent: true,
+            opacity: 1,
+          })
+        );
+    });
   }
   // 初始化左上角fps性能参数
   initStats() {
