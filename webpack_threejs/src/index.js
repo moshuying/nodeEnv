@@ -2,14 +2,15 @@ import * as THREE from "three";
 import { DirectionalLight } from "three/src/lights/DirectionalLight";
 import dat from "three/examples/jsm/libs/dat.gui.module";
 import Stats from "three/examples/jsm/libs/stats.module";
-import {Sky} from "three/examples/jsm/objects/Sky"
+import { Sky } from "three/examples/jsm/objects/Sky";
+import { Water } from "three/examples/jsm/objects/Water2.js";
 import { CubeGeometry } from "three/src/Three.Legacy";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { BackSide } from "three";
-
+const BaseUrl = "http://127.0.0.1:5500/";
 let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayRenderScene,
   xRayComposer,
@@ -39,7 +40,20 @@ let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayScene = new THREE.Scene(),
   uniforms1 = { time: { value: 1.0 } },
   uniforms2 = { ratio: { value: 0.0 } };
-let sky,sun
+let positionBox = new THREE.Mesh(
+  new THREE.BoxBufferGeometry(100, 100, 100),
+  new THREE.MeshStandardMaterial({ roughness: 0 })
+);
+let sky,
+  sun = new THREE.Vector3(),
+  waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000),
+  water,
+  pmremGenerator;
+//天空相关
+let parameters = {
+  inclination: 0.49,
+  azimuth: 0.205,
+};
 let floorBoard,
   floorBoardShaderMaterial = new THREE.RawShaderMaterial({
     uniforms: uniforms2,
@@ -111,6 +125,7 @@ class App {
       uniforms1.time.value += clock.getDelta() * 5;
       !params.pause &&
         (that.animateCircle(),
+        that.positionWorld(),
         uniforms2.ratio.value > 3
           ? (uniforms2.ratio.value = 0)
           : (uniforms2.ratio.value += 0.00702));
@@ -137,12 +152,14 @@ class App {
     };
 
     this.initRender();
-    this.initSky()
-    this.initCamera();
     this.initScene();
+    this.initWater();
+    this.initSky();
+    this.initCamera();
     this.initModel();
     this.addCircle();
 
+    this.updateSun();
     this.initControls();
     this.initGui();
     this.initStats();
@@ -157,7 +174,7 @@ class App {
     xRayComposer.addPass(xRayRenderScene);
     let inner = 150;
     let outer = 170;
-    let url = "http://127.0.0.1:5500/src/lib/textures/circle";
+    let url = BaseUrl + "src/lib/textures/circle";
     this.textureLoader = new THREE.TextureLoader();
     let texture1 = this.textureLoader.load(`${url}/c1.png`);
     let texture2 = this.textureLoader.load(`${url}/c2.png`);
@@ -417,21 +434,61 @@ class App {
       window.innerWidth * windowSize.multiplyingPower,
       window.innerHeight * windowSize.multiplyingPower
     );
-    renderer.outputEncoding = THREE.sRGBEncoding
-    renderer.setClearColor(0x000000, 1);//默认填充颜色
-    renderer.shadowMap.enabled = true;//告诉渲染器需要阴影效果
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.setClearColor(0x000000, 1); //默认填充颜色
+    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 0.5
-    renderer.setPixelRatio( window.devicePixelRatio );//设置dip 避免hiDPI设备模糊
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.5;
+    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
     renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
     renderer.autoClear = false;
     renderer.debug.checkShaderErrors = false;
   }
+  initWater() {
+    // 生成水
+    var params = {
+      color: '#ffffff',
+      scale: 4,
+      flowX: 1,
+      flowY: 1
+    };
+    // water = new Water(waterGeometry, {
+      // textureWidth: 512,
+      // textureHeight: 512,
+      // waterNormals: new THREE.TextureLoader().load(
+      //   BaseUrl + "src/lib/textures/waternormals.jpg",
+        // function (texture) {
+        //   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        // }
+      // ),
+      // alpha: 1.0,
+      // sunDirection: new THREE.Vector3(),
+      // sunColor: 0xffffff,
+      // waterColor: 0x001e0f,
+      // distortionScale: 3.7,
+      // fog: scene.fog !== undefined,
+    // });
+    var waterGeometry = new THREE.PlaneBufferGeometry( 4000, 4000 );
+
+				water = new Water( waterGeometry, {
+					color: params.color,
+					scale: params.scale,
+					flowDirection: new THREE.Vector2( params.flowX, params.flowY ),
+					textureWidth: 1024,
+          textureHeight: 1024,
+          normalMap0:new THREE.TextureLoader().load(BaseUrl+"src/lib/textures/Water_1_M_Normal.jpg"),
+          normalMap1:new THREE.TextureLoader().load(BaseUrl+"src/lib/textures/Water_2_M_Normal.jpg")
+				} );
+				water.position.y = -1;
+				water.rotation.x = Math.PI * - 0.5;
+    // water.rotation.x = -Math.PI / 2;
+    scene.add(water);
+  }
   // 初始化天空
-  initSky(){
-//给场景添加天空盒子纹理
+  initSky() {
+    //给场景添加天空盒子纹理
     // let cubeTextureLoader = new THREE.CubeTextureLoader();
     // cubeTextureLoader.setPath(
     //   "http://127.0.0.1:5500/src/demo/lib/textures/cube/skybox/"
@@ -446,16 +503,28 @@ class App {
     //   "nz.jpg",
     // ]);
     // scene.background = cubeTexture;
-    sky = new Sky() 
-    sky.scale.setScalar( 450000 );
-    scene.add( sky );
-    sun = new THREE.Vector3()
-        
+    sky = new Sky();
+    sky.scale.setScalar(10000);
+    scene.add(sky);
+    let uniforms = sky.material.uniforms;
+    uniforms["turbidity"].value = 10;
+    uniforms["rayleigh"].value = 2;
+    uniforms["mieCoefficient"].value = 0.005;
+    uniforms["mieDirectionalG"].value = 0.8;
+    pmremGenerator = new THREE.PMREMGenerator(renderer);
   }
   // 初始化摄像机
   initCamera() {
     camera.position.set(1600, 1200, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
+  }
+  // 盒子动画
+  positionWorld() {
+    let time = Date.now() * 0.001;
+    positionBox.position.y = Math.sin(time) * 20 + 5;
+    positionBox.rotation.x = time * 0.5;
+    positionBox.rotation.z = time * 0.51;
+    // water.material.uniforms["time"].value += 1.0 / 60.0;
   }
   // 初始化场景
   initScene() {
@@ -468,6 +537,19 @@ class App {
     scene.add(light);
 
     scene.autoUpdate = true;
+  }
+  updateSun() {
+    let theta = Math.PI * (parameters.inclination - 0.5);
+    let phi = 2 * Math.PI * (parameters.azimuth - 0.5);
+
+    sun.x = Math.cos(phi);
+    sun.y = Math.sin(phi) * Math.sin(theta);
+    sun.z = Math.sin(phi) * Math.cos(theta);
+
+    sky.material.uniforms["sunPosition"].value.copy(sun);
+    // water.material.uniforms["sunDirection"].value.copy(sun).normalize();
+
+    scene.environment = pmremGenerator.fromScene(sky).texture;
   }
   //随机生成颜色
   randomColor() {
@@ -503,6 +585,9 @@ class App {
     let helper = new THREE.AxesHelper(10);
     scene.add(helper);
 
+    // 原点浮动盒子
+    scene.add(positionBox);
+
     // 地板
     floorBoard = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(4000, 4000),
@@ -522,22 +607,29 @@ class App {
     grid.material.transparent = true;
     scene.add(grid);
 
-    // 加入模型 100个方盒子 100个碗
-    for (let i = 0; i < 200; i++) {
-      let cube = new THREE[i > 100 ? "CubeGeometry" : "CylinderGeometry"](
+    // 加入模型 一半方盒子 一半碗
+    for (let i = 0; i < 100; i++) {
+      let cube = new THREE[i > 50 ? "BoxBufferGeometry" : "CylinderGeometry"](
         100,
         Math.random() * 100,
         100
       );
-      cube.uvsNeedUpdate = true;
-      cube.elementsNeedUpdate = true;
-      cube.colorsNeedUpdate = true;
+
       let position = new THREE.Vector3(
         2000 * (2.0 * Math.random() - 1.0),
         0,
         2000 * (2.0 * Math.random() - 1.0)
       );
-      scene.add(this.newXrayMesh(cube, sceneShaderMaterial, position));
+      scene.add(
+        this.newXrayMesh(
+          cube,
+          new THREE.MeshStandardMaterial({
+            color: this.randomColor(),
+            roughness: 0,
+          }),
+          position
+        )
+      );
       xRayScene.add(
         this.newXrayMesh(
           cube,
@@ -611,49 +703,24 @@ class App {
   // 初始化右上角参数调整
   initGui() {
     gui = new dat.GUI();
-    var effectController = {
-      turbidity: 10,
-      rayleigh: 3,
-      mieCoefficient: 0.005,
-      mieDirectionalG: 0.7,
-      inclination: 0.49, // elevation / inclination
-      azimuth: 0.25, // Facing front,
-      exposure: renderer.toneMappingExposure
-    };
 
-    function guiChanged() {
-
-      var uniforms = sky.material.uniforms;
-      uniforms[ "turbidity" ].value = effectController.turbidity;
-      uniforms[ "rayleigh" ].value = effectController.rayleigh;
-      uniforms[ "mieCoefficient" ].value = effectController.mieCoefficient;
-      uniforms[ "mieDirectionalG" ].value = effectController.mieDirectionalG;
-
-      var theta = Math.PI * ( effectController.inclination - 0.5 );
-      var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
-
-      sun.x = Math.cos( phi );
-      sun.y = Math.sin( phi ) * Math.sin( theta );
-      sun.z = Math.sin( phi ) * Math.cos( theta );
-
-      uniforms[ "sunPosition" ].value.copy( sun );
-
-      renderer.toneMappingExposure = effectController.exposure;
-      renderer.render( scene, camera );
-
-    }
-
-    gui.add( effectController, "turbidity", 0.0, 20.0, 0.1 ).onChange( guiChanged );
-    gui.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );
-    gui.add( effectController, "mieCoefficient", 0.0, 0.1, 0.001 ).onChange( guiChanged );
-    gui.add( effectController, "mieDirectionalG", 0.0, 1, 0.001 ).onChange( guiChanged );
-    gui.add( effectController, "inclination", 0, 1, 0.0001 ).onChange( guiChanged );
-    gui.add( effectController, "azimuth", 0, 1, 0.0001 ).onChange( guiChanged );
-    gui.add( effectController, "exposure", 0, 1, 0.0001 ).onChange( guiChanged );
-
-    guiChanged();
-    let folder = gui.addFolder("renderer");
-    folder
+    let skyfolder = gui.addFolder("Sky");
+    skyfolder
+      .add(parameters, "inclination", 0, 0.5, 0.0001)
+      .onChange(this.updateSun);
+    skyfolder.add(parameters, "azimuth", 0, 1, 0.0001).onChange(this.updateSun);
+    skyfolder.open();
+    // let uniforms = water.material.uniforms;
+    // let folder = gui.addFolder("Water");
+    // folder
+    //   .add(uniforms.distortionScale, "value", 0, 8, 0.1)
+    //   .name("distortionScale");
+    // folder.add(uniforms.size, "value", 0.1, 10, 0.1).name("size");
+    // folder.add(uniforms.alpha, "value", 0.9, 1, 0.001).name("alpha");
+    // folder.open();
+    //  randerer设置
+    let rendererfolder = gui.addFolder("renderer");
+    rendererfolder
       .add(windowSize, "multiplyingPower", 0.1, 2)
       .step(0.1)
       .onChange(function (value) {
@@ -663,8 +730,10 @@ class App {
         );
         renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
       });
-    folder.add(params, "pause");
-    folder.add(params, "pauseXRay");
+    rendererfolder.add(params, "pause");
+    rendererfolder.add(params, "pauseXRay");
+    rendererfolder.open();
+
     gui.add(params, "floorBoard").onChange((el) => {
       el && (floorBoard.material = floorBoardShaderMaterial);
       !el &&
