@@ -9,7 +9,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   //调试工具
-  // devtool: "source-map", // 关了这玩意免得打包出来还带个map
+  devtool: "source-map", // 关了这玩意免得打包出来还带个map
   //调试服务
   devServer: {
     contentBase: path.join(__dirname, "dist"),

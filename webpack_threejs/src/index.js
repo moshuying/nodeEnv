@@ -40,10 +40,7 @@ let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayScene = new THREE.Scene(),
   uniforms1 = { time: { value: 1.0 } },
   uniforms2 = { ratio: { value: 0.0 } };
-let positionBox = new THREE.Mesh(
-  new THREE.BoxBufferGeometry(100, 100, 100),
-  new THREE.MeshStandardMaterial({ roughness: 0 })
-);
+let positionBox,positionBoxClone;
 let sky,
   sun = new THREE.Vector3(),
   waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000),
@@ -503,8 +500,9 @@ class App {
     //   "nz.jpg",
     // ]);
     // scene.background = cubeTexture;
+
     sky = new Sky();
-    sky.scale.setScalar(10000);
+    sky.scale.setScalar(1000000);
     scene.add(sky);
     let uniforms = sky.material.uniforms;
     uniforms["turbidity"].value = 10;
@@ -524,6 +522,10 @@ class App {
     positionBox.position.y = Math.sin(time) * 20 + 5;
     positionBox.rotation.x = time * 0.5;
     positionBox.rotation.z = time * 0.51;
+    // x扫描部分同步旋转
+    positionBoxClone.position.y = Math.sin(time) * 20 + 5;
+    positionBoxClone.rotation.x = time * 0.5;
+    positionBoxClone.rotation.z = time * 0.51;
     // water.material.uniforms["time"].value += 1.0 / 60.0;
   }
   // 初始化场景
@@ -586,7 +588,20 @@ class App {
     scene.add(helper);
 
     // 原点浮动盒子
+    positionBox =  new THREE.Mesh(
+      new THREE.BoxBufferGeometry(100, 100, 100),
+      new THREE.MeshStandardMaterial({ roughness: 0 })
+    )
+    positionBox.position.z = 300
+    positionBox.name = "cubeMesh"
     scene.add(positionBox);
+    positionBoxClone =new THREE.Mesh(
+      new THREE.BoxBufferGeometry(100, 100, 100),
+      new THREE.MeshStandardMaterial({ roughness: 0,wireframe: true, opacity: 0, })
+    );
+    positionBoxClone.position.z = 300
+    positionBoxClone.name = "cubeMesh"
+    xRayScene.add(positionBoxClone)
 
     // 地板
     floorBoard = new THREE.Mesh(
@@ -696,7 +711,7 @@ class App {
     //设置相机距离原点的最远距离
     // controls.minDistance = 50;
     //设置相机距离原点的最远距离
-    // controls.maxDistance = 200;
+    controls.maxDistance = 6000;
     //是否开启右键拖拽
     controls.enablePan = true;
   }
