@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { DirectionalLight } from "three/src/lights/DirectionalLight";
 import dat from "three/examples/jsm/libs/dat.gui.module";
 import Stats from "three/examples/jsm/libs/stats.module";
+import {Sky} from "three/examples/jsm/objects/Sky"
 import { CubeGeometry } from "three/src/Three.Legacy";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
@@ -38,7 +39,7 @@ let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayScene = new THREE.Scene(),
   uniforms1 = { time: { value: 1.0 } },
   uniforms2 = { ratio: { value: 0.0 } };
-
+let sky,sun
 let floorBoard,
   floorBoardShaderMaterial = new THREE.RawShaderMaterial({
     uniforms: uniforms2,
@@ -136,6 +137,7 @@ class App {
     };
 
     this.initRender();
+    this.initSky()
     this.initCamera();
     this.initScene();
     this.initModel();
@@ -153,10 +155,9 @@ class App {
     xRayComposer = new EffectComposer(renderer);
     xRayComposer.renderToScreen = false;
     xRayComposer.addPass(xRayRenderScene);
-
     let inner = 150;
     let outer = 170;
-    let url = "http://127.0.0.1:5500/src/lib/textures/circle/";
+    let url = "http://127.0.0.1:5500/src/lib/textures/circle";
     this.textureLoader = new THREE.TextureLoader();
     let texture1 = this.textureLoader.load(`${url}/c1.png`);
     let texture2 = this.textureLoader.load(`${url}/c2.png`);
@@ -416,25 +417,21 @@ class App {
       window.innerWidth * windowSize.multiplyingPower,
       window.innerHeight * windowSize.multiplyingPower
     );
-    //告诉渲染器需要阴影效果
-    renderer.shadowMap.enabled = true;
+    renderer.outputEncoding = THREE.sRGBEncoding
+    renderer.setClearColor(0x000000, 1);//默认填充颜色
+    renderer.shadowMap.enabled = true;//告诉渲染器需要阴影效果
     renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-
-    renderer.setClearColor(0x000001, 1);
-
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 0.5
+    renderer.setPixelRatio( window.devicePixelRatio );//设置dip 避免hiDPI设备模糊
     renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
     renderer.autoClear = false;
     renderer.debug.checkShaderErrors = false;
   }
-  // 初始化摄像机
-  initCamera() {
-    camera.position.set(1600, 1200, 0);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
-  }
-  // 初始化场景
-  initScene() {
-    //给场景添加天空盒子纹理
+  // 初始化天空
+  initSky(){
+//给场景添加天空盒子纹理
     // let cubeTextureLoader = new THREE.CubeTextureLoader();
     // cubeTextureLoader.setPath(
     //   "http://127.0.0.1:5500/src/demo/lib/textures/cube/skybox/"
@@ -449,7 +446,19 @@ class App {
     //   "nz.jpg",
     // ]);
     // scene.background = cubeTexture;
-
+    sky = new Sky() 
+    sky.scale.setScalar( 450000 );
+    scene.add( sky );
+    sun = new THREE.Vector3()
+        
+  }
+  // 初始化摄像机
+  initCamera() {
+    camera.position.set(1600, 1200, 0);
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+  }
+  // 初始化场景
+  initScene() {
     // 加光源
     scene.add(new THREE.AmbientLight(0x000000));
     let light = new THREE.PointLight(0xffffff);
@@ -498,14 +507,14 @@ class App {
     floorBoard = new THREE.Mesh(
       new THREE.PlaneBufferGeometry(4000, 4000),
       new THREE.MeshPhongMaterial({
-        color: 0x9fdb9f,
+        color: 0xffffff,
         transparent: false,
         opacity: 0.8,
       })
     );
     floorBoard.rotation.x = -Math.PI / 2;
     floorBoard.receiveShadow = true;
-    scene.add(floorBoard);
+    // scene.add(floorBoard);
 
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
@@ -602,6 +611,47 @@ class App {
   // 初始化右上角参数调整
   initGui() {
     gui = new dat.GUI();
+    var effectController = {
+      turbidity: 10,
+      rayleigh: 3,
+      mieCoefficient: 0.005,
+      mieDirectionalG: 0.7,
+      inclination: 0.49, // elevation / inclination
+      azimuth: 0.25, // Facing front,
+      exposure: renderer.toneMappingExposure
+    };
+
+    function guiChanged() {
+
+      var uniforms = sky.material.uniforms;
+      uniforms[ "turbidity" ].value = effectController.turbidity;
+      uniforms[ "rayleigh" ].value = effectController.rayleigh;
+      uniforms[ "mieCoefficient" ].value = effectController.mieCoefficient;
+      uniforms[ "mieDirectionalG" ].value = effectController.mieDirectionalG;
+
+      var theta = Math.PI * ( effectController.inclination - 0.5 );
+      var phi = 2 * Math.PI * ( effectController.azimuth - 0.5 );
+
+      sun.x = Math.cos( phi );
+      sun.y = Math.sin( phi ) * Math.sin( theta );
+      sun.z = Math.sin( phi ) * Math.cos( theta );
+
+      uniforms[ "sunPosition" ].value.copy( sun );
+
+      renderer.toneMappingExposure = effectController.exposure;
+      renderer.render( scene, camera );
+
+    }
+
+    gui.add( effectController, "turbidity", 0.0, 20.0, 0.1 ).onChange( guiChanged );
+    gui.add( effectController, "rayleigh", 0.0, 4, 0.001 ).onChange( guiChanged );
+    gui.add( effectController, "mieCoefficient", 0.0, 0.1, 0.001 ).onChange( guiChanged );
+    gui.add( effectController, "mieDirectionalG", 0.0, 1, 0.001 ).onChange( guiChanged );
+    gui.add( effectController, "inclination", 0, 1, 0.0001 ).onChange( guiChanged );
+    gui.add( effectController, "azimuth", 0, 1, 0.0001 ).onChange( guiChanged );
+    gui.add( effectController, "exposure", 0, 1, 0.0001 ).onChange( guiChanged );
+
+    guiChanged();
     let folder = gui.addFolder("renderer");
     folder
       .add(windowSize, "multiplyingPower", 0.1, 2)
@@ -675,7 +725,7 @@ class App {
       if (e.keyCode === 32) {
         document
           .querySelector(
-            "body > div.dg.ac > div > ul > li.cr.boolean > div > span"
+            "body > div.dg.ac > div > ul > li.folder > div > ul > li:nth-child(3) > div > div > input[type=checkbox]"
           )
           .click();
       }
