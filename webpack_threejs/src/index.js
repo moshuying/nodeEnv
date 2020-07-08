@@ -1,3 +1,4 @@
+window.BaseUrl = "http://127.0.0.1:4571/";
 import * as THREE from "three";
 import { DirectionalLight } from "three/src/lights/DirectionalLight";
 import dat from "three/examples/jsm/libs/dat.gui.module";
@@ -10,7 +11,8 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { BackSide } from "three";
-const BaseUrl = "http://127.0.0.1:4571/";
+
+import ChooseShader from "./lib/js/libs/choose.shader"
 let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayRenderScene,
   xRayComposer,
@@ -32,14 +34,15 @@ let renderer = new THREE.WebGLRenderer({ antialias: true }),
     pauseXRay: false,
     floorBoard: false,
     cubeShader: false,
+    gotoNext:'default'
   },
   windowSize = {
     multiplyingPower: 1,
   },
   animate,
   xRayScene = new THREE.Scene(),
-  uniforms1 = { time: { value: 1.0 } },
-  uniforms2 = { ratio: { value: 0.0 } };
+  uniforms1 = { time: { value: 1.0 } };
+window.uniforms2 = { ratio: { value: 0.0 } };
 let positionBox,positionBoxClone;
 let sky,
   sun = new THREE.Vector3(),
@@ -53,7 +56,7 @@ let parameters = {
 };
 let floorBoard,
   floorBoardShaderMaterial = new THREE.RawShaderMaterial({
-    uniforms: uniforms2,
+    uniforms: window.uniforms2,
     vertexShader: [
       "precision mediump float;",
       "precision mediump int;",
@@ -123,9 +126,9 @@ class App {
       !params.pause &&
         (that.animateCircle(),
         that.positionWorld(),
-        uniforms2.ratio.value > 3
-          ? (uniforms2.ratio.value = 0)
-          : (uniforms2.ratio.value += 0.00702));
+        window.uniforms2.ratio.value > 3
+          ? (window.uniforms2.ratio.value = 0)
+          : (window.uniforms2.ratio.value += 0.00702));
       requestAnimationFrame(animate);
     };
     animate();
@@ -374,7 +377,7 @@ class App {
         this.circleParams.currentLevel2 = 0.001;
         this.circleParams.opacity = 1;
         this.circleParams.startDelay = 0;
-        uniforms2.ratio.value = 0;
+        window.uniforms2.ratio.value = 0;
       } else {
         //继续动画
         this.circleParams.currentLevel1 += this.circleParams.currentSpeed1;
@@ -619,6 +622,9 @@ class App {
     floorBoard.receiveShadow = true;
     scene.add(floorBoard);
 
+    let cho = new ChooseShader()
+    cho.makePlan(scene)
+    cho.moveCamera(camera)
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
     grid.material.opacity = 0.3;
@@ -717,14 +723,26 @@ class App {
     //设置相机距离原点的最远距离
     // controls.minDistance = 50;
     //设置相机距离原点的最远距离
-    controls.maxDistance = 6000;
+    // controls.maxDistance = 6000;
     //是否开启右键拖拽
     controls.enablePan = true;
   }
   // 初始化右上角参数调整
   initGui() {
+    const that = this
     gui = new dat.GUI();
 
+    let Goto = gui.addFolder("Goto");
+    Goto.add(params,'gotoNext',['default','ChooseShader']).onChange(el=>{
+      if(el==='ChooseShader'){
+        camera.position.set(-4500,800,0)
+        camera.lookAt(new THREE.Vector3(-4500,0,0))
+      }
+      if(el==='default'){
+        that.initCamera()
+      }
+    })
+    Goto.open()
     let skyfolder = gui.addFolder("Sky");
     skyfolder
       .add(parameters, "inclination", 0, 0.5, 0.0001)
