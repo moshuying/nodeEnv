@@ -10,7 +10,7 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { BackSide } from "three";
-const BaseUrl = "http://127.0.0.1:5500/";
+const BaseUrl = "http://127.0.0.1:4571/";
 let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayRenderScene,
   xRayComposer,
@@ -336,6 +336,7 @@ class App {
     smoothCircle2.rotateX(Math.PI / 2);
 
     circle1.position.setY(100);
+    circle2.position.setY(110);
     lowCircle1.position.setY(99);
     lowCircle2.position.setY(100);
     smoothCircle2.position.setY(99);
@@ -513,7 +514,7 @@ class App {
   }
   // 初始化摄像机
   initCamera() {
-    camera.position.set(1600, 1200, 0);
+    camera.position.set(0, 120, 400);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
   // 盒子动画
@@ -532,8 +533,8 @@ class App {
   initScene() {
     // 加光源
     scene.add(new THREE.AmbientLight(0x000000));
-    let light = new THREE.PointLight(0xffffff);
-    light.position.set(25, 30, 10);
+    let light = new THREE.DirectionalLight(0xffffff);
+    // light.position.set(25, 30, 10);
     //告诉平行光需要开启阴影投射
     light.castShadow = true;
     scene.add(light);
@@ -610,11 +611,13 @@ class App {
         color: 0xffffff,
         transparent: false,
         opacity: 0.8,
+        map:new THREE.TextureLoader().load(BaseUrl+'src/lib/textures/grasslight-big.jpg')
       })
     );
+    floorBoard.position.y = -2
     floorBoard.rotation.x = -Math.PI / 2;
     floorBoard.receiveShadow = true;
-    // scene.add(floorBoard);
+    scene.add(floorBoard);
 
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
@@ -622,25 +625,28 @@ class App {
     grid.material.transparent = true;
     scene.add(grid);
 
+    let num = 100
     // 加入模型 一半方盒子 一半碗
-    for (let i = 0; i < 100; i++) {
-      let cube = new THREE[i > 50 ? "BoxBufferGeometry" : "CylinderGeometry"](
+    for (let i = 0; i < num; i++) {
+      let height = Math.random() * 100
+      let cube = new THREE[i > num/2 ? "BoxBufferGeometry" : "CylinderGeometry"](
         100,
-        Math.random() * 100,
+        height,
         100
       );
 
       let position = new THREE.Vector3(
         2000 * (2.0 * Math.random() - 1.0),
-        0,
+        height/2,
         2000 * (2.0 * Math.random() - 1.0)
       );
       scene.add(
         this.newXrayMesh(
           cube,
           new THREE.MeshStandardMaterial({
-            color: this.randomColor(),
+            color: i>num/2?null:this.randomColor(),
             roughness: 0,
+            map:i>num/2?new THREE.TextureLoader().load(BaseUrl+'src/lib/textures/crate.gif'):null
           }),
           position
         )
