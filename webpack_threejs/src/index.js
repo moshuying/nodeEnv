@@ -43,6 +43,11 @@ let renderer = new THREE.WebGLRenderer({ antialias: true }),
   xRayScene = new THREE.Scene(),
   uniforms1 = { time: { value: 1.0 } };
 window.uniforms2 = { ratio: { value: 0.0 } };
+window.uniforms3 ={
+	u_color: { value: new THREE.Vector3(1, 0, 0) },
+	u_r: { value: 0.25 },
+	u_edge: { value: 0.05 }
+}
 let positionBox,positionBoxClone;
 let sky,
   sun = new THREE.Vector3(),
@@ -56,7 +61,7 @@ let parameters = {
 };
 let floorBoard,
   floorBoardShaderMaterial = new THREE.RawShaderMaterial({
-    uniforms: window.uniforms2,
+    uniforms: window.uniforms3,
     vertexShader: [
       "precision mediump float;",
       "precision mediump int;",
@@ -624,6 +629,147 @@ class App {
 
     let cho = new ChooseShader()
     cho.makePlan(scene)
+    for(let i = 0;i<3;i++){
+      for(let j = 0;j<3;j++){
+        let cube = new THREE.PlaneGeometry(50,50)
+        let mesh = new THREE.Mesh(cube,new THREE.ShaderMaterial({
+          uniforms: {
+            u_pixelRatio: {
+                type: 'f',
+                value: window.devicePixelRatio
+            },
+            u_time: {
+                type: 'f',
+                value: 0.0
+            },
+            u_rate: {
+                type: 'f',
+                value: 0.0
+            },
+            u_resolution: {
+                type: 'v2',
+                value: new THREE.Vector2()
+            },
+            u_mouse: {
+                type: 'v2',
+                value: new THREE.Vector2()
+            },
+            u_mouse_vel: {
+                type: 'v2',
+                value: new THREE.Vector2()
+            },
+        } ,
+          vertexShader:`
+          varying vec2 vUv;
+	void main() {
+		vUv = uv;
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+	}`,
+          fragmentShader:`
+          
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+#define M_PI 3.1415926535897932384626433832795
+
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform vec2 u_mouse_vel;
+uniform float u_time;
+uniform float u_pixelRatio;
+uniform float u_rate;
+
+
+bool inTitle(vec2 p, float titleSize){
+	vec2 ptile = step(0.5, fract(0.5 * p / titleSize));
+	return ptile.x == ptile.y;
+}
+
+bool isCircle( vec2 pos ){
+	float dis = length(gl_FragCoord.xy - pos);
+	float theta = atan(gl_FragCoord.y - pos.y, gl_FragCoord.x - pos.x) ;//+ u_time;//+ M_PI/2.0;
+
+	float del = 2.0;
+
+	// float windowSize = length(u_mouse - u_resolution/2.0)/10.0 + 50.0;
+	float rad =  8. * u_pixelRatio * ( 1.0+ 2.0* (cos(theta * 3.0 * sin(u_time /del) ) + 1.0) / 2.0 * (cos(u_time* 2.75) + 1.0));
+	// float rad = length(u_resolution.xy)/100.0 + 50.0 * (cos(theta * 3.0 * sin(u_time /del) ) + 1.0) / 2.0;
+
+	if(dis < rad)   return true;
+	else            return false;
+}
+
+
+void main(){
+	vec3 col = vec3(0.0, 0.0, 0.0);
+
+	float rgbRad = min(u_resolution.x, u_resolution.y) / 2.0 ;
+	float rTheta = M_PI * 2.0 /3.0*0.0;
+	float pVal0 = sin(u_time / 1.0);
+	float pVal1 = sin(u_time / 2.0);
+	float pVal2 = sin(u_time / 4.0);
+
+	float windowSize = 100. * u_pixelRatio; //+ floor(100. * (cos(u_time /3.0) + 1.0));
+	float yy = floor( gl_FragCoord.y / windowSize  );
+	vec2 curPos;
+	if (mod(yy, 2.0)==0.0){
+		curPos = vec2( floor( gl_FragCoord.x / windowSize  ) * windowSize + windowSize/2.0, yy * windowSize + windowSize/2.0);
+	}else{
+		curPos = vec2( floor( gl_FragCoord.x / windowSize  ) * windowSize + windowSize/2.0, yy * windowSize + windowSize/2.0);
+	}
+	vec2 rPos = vec2(curPos.x, curPos.y);
+	float gTheta = M_PI * 2.0  * sin(u_time);
+	vec2 gPos = vec2(curPos.x + 2.0 * u_pixelRatio * sin(gTheta), curPos.y);
+	float bTheta = M_PI * 2.0  *cos(u_time);
+	vec2 bPos = vec2( curPos.x, curPos.y + 2.0 * u_pixelRatio * cos(bTheta));
+
+	// float rTheta = vec2(100.0, 100.0);
+
+
+	bool isRCircle = isCircle(rPos);
+	// bool isRCircle = isCircle(rPos );
+	bool isGCircle = isCircle(gPos);
+	bool isBCircle = isCircle(bPos);
+	// bool isCenterCircle = isCircle(u_resolution.xy/2.0);
+	// bool isGCircle = isCricle()
+
+	if(isRCircle){
+		col.r += 1.0; //0.4 + 0.6 *abs(sin(u_time/10.0)) ;
+	}
+
+	if(isGCircle){
+		col.g += 1.0;//0.4 + 0.6 * abs(sin(u_time/3.0));
+	}
+
+	if(isBCircle){
+		col.b += 1.0; //0.6 + 0.4 * (cos(u_time/10.0) + 1.0);
+	}
+
+	vec2 centerPos = vec2(u_resolution.x/2.0, u_resolution.y/2.0) * u_pixelRatio;
+	float maxLength = length(centerPos.xy);
+	float curLength = length(gl_FragCoord.xy - centerPos.xy);
+	float rate = curLength / maxLength;
+
+	col = col * (1.0-rate) * (1.0-rate) * 1.2;
+
+	gl_FragColor = vec4( col, 1.0);
+
+}`,
+          side: THREE.DoubleSide,
+          transparent: true,
+          depthWrite: false
+        }))
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.x = i*100-4950
+        mesh.position.y= 26
+        mesh.position.z=j*100-450
+        mesh.updateMatrix();
+        mesh.layers.enable(1);
+        scene.add(mesh)
+      }
+    }
     cho.moveCamera(camera)
     // 地板割线
     let grid = new THREE.GridHelper(4000, 50, 0xffffff, 0xffffff);
