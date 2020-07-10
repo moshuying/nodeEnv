@@ -1,5 +1,9 @@
 import {ShaderMaterial} from "three";
 class ShaderBuilder {
+  /**
+   * 构建ShaderMaterial
+   * @param {object} options 构建参数，同THREE.ShaderMaterial
+   */
   constructor(options) {
     this.shader = new ShaderMaterial(options); 
     
