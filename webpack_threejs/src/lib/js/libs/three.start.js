@@ -1,37 +1,131 @@
 import * as THREE from "three";
-class Start{
-  constructor(){
-    return this
-  }
-  /**
-   * @return {THREE.WebGLRenderer} 返回webGlrenderer对象
-   */
-  renderer(){
-    let renderer = new THREE.WebGLRenderer()
-    renderer.setSize(
-      window.innerWidth * 1,
-      window.innerHeight * 1
-    );
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.setClearColor(0xffea00, 0.5); //默认填充颜色
-    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.5;
-    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
-    renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
-    document.body.appendChild(renderer.domElement);
-    renderer.autoClear = false;
-    renderer.debug.checkShaderErrors = false;
-    return renderer
-  }
-  /**
-   * @return {THREE.PerspectiveCamera} 返回透视摄像机
-   */
-  camera(){
-    let camera = new THREE.PerspectiveCamera(75,window.innerWidth/ window.innerHeight,0.1,10000)
-    camera.position.set(10,10,10)
-    return camera
-  }
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import Stats from "three/examples/jsm/libs/stats.module";
+import {Sky} from "three/examples/jsm/objects/Sky";
+
+/**
+ * @return {THREE.WebGLRenderer} 返回部分初始化的webGlrenderer对象
+ */
+function renderer(){
+  let renderer = new THREE.WebGLRenderer()
+  renderer.setSize(
+    window.innerWidth * 1,
+    window.innerHeight * 1
+  );
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.setClearColor(0xffea00, 0.5); //默认填充颜色
+  renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.5;
+  renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
+  renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+  document.body.appendChild(renderer.domElement);
+  renderer.autoClear = false;
+  renderer.debug.checkShaderErrors = false;
+  return renderer
 }
-export {Start}
+
+/**
+ * @return {THREE.PerspectiveCamera} 返回透视摄像机
+ */
+function camera(){
+  let camera = new THREE.PerspectiveCamera(75,window.innerWidth/ window.innerHeight,0.1,10000)
+  camera.position.set(10,10,10)
+  return camera
+}
+
+/**
+ *
+ * @returns {THREE.Scene} 返回部分初始化的THREE场景
+ */
+function scene() {
+  const scene = new THREE.Scene()
+  scene.background = new THREE.Color(0xe3e3e3)
+  scene.add(new THREE.AxesHelper(10))
+  const light = new THREE.DirectionalLight(0xffffff);
+  light.castShadow = true;
+  scene.add(light)
+  scene.autoUpdate = true;
+  return scene;
+}
+
+/**
+ * 初始化基本的controls
+ * @param {THREE.PerspectiveCamera} camera
+ * @param {HTMLCanvasElement} dom
+ * @returns {OrbitControls}
+ */
+function controls(camera,dom) {
+  const controls = new OrbitControls(camera,dom)
+
+  // 如果使用animate方法时，将此函数删除
+  //controls.addEventListener( 'change', render );
+
+  // 使动画循环使用时阻尼或自转 意思是否有惯性
+  controls.enableDamping = true;
+
+  //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+  //controls.dampingFactor = 0.25;
+
+  //是否可以缩放
+  controls.enableZoom = true;
+
+  //是否自动旋转
+  controls.autoRotate = false;
+
+  //设置相机距离原点的最近距离
+  // controls.minDistance = 50;
+
+  //设置相机距离原点的最远距离
+  // controls.maxDistance = 200;
+
+  //是否开启右键拖拽
+  controls.enablePan = true;
+  return controls
+}
+
+/**
+ * 初始化性能插件
+ * @param {HTMLElement} dom
+ */
+function StatsStart(dom) {
+  dom = dom||document.body
+  dom.appendChild(new Stats().dom)
+}
+
+/**
+ * 大方盒子的天空盒，缩放小了能看出来
+ * @param {THREE.Scene} scene 场景
+ * @param {THREE.WebGLRenderer} renderer 渲染器
+ * @param {number} scalar 缩放数值
+ */
+function initSkyByMesh(scene,renderer,scalar) {
+  let sky = new Sky();
+  sky.scale.setScalar(scalar||10000);
+  scene.add(sky);
+
+  let uniforms = sky.material.uniforms;
+  uniforms["turbidity"].value = 10;
+  uniforms["rayleigh"].value = 2;
+  uniforms["mieCoefficient"].value = 0.005;
+  uniforms["mieDirectionalG"].value = 0.8;
+
+  let pmremGenerator = new THREE.PMREMGenerator(renderer);
+  let theta = Math.PI * (0.49 - 0.5);
+  let phi = 2 * Math.PI * ( 0.205 - 0.5);
+  let sun = new THREE.Vector3()
+  sun.x = Math.cos(phi)
+  sun.y = Math.sin(phi) * Math.sin(theta)
+  sun.z = Math.sin(phi) * Math.cos(theta)
+  sky.material.uniforms["sunPosition"].value.copy(sun)
+  scene.environment = pmremGenerator.fromScene(sky).texture
+}
+export default {
+  renderer,
+  camera,
+  scene,
+  controls,
+  StatsStart,
+  initSkyByMesh
+}

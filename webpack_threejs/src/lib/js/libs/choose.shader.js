@@ -9,14 +9,12 @@ class ChooseShader {
   constructor(scene, camera) {
     this.scene=scene
     this.camera=camera
-    this.renderer = new THREE.WebGL1Renderer()
+    this.renderer = new THREE.WebGLRenderer()
     this.ShaderArray = [];
     this.uniforms = {
       time:{value:1.0}
     }
     this.initData()
-    this.moveCamera()
-    // this.animation()
     return this
   }
 
