@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module";
 import {Sky} from "three/examples/jsm/objects/Sky";
-
+import dat from "three/examples/jsm/libs/dat.gui.module";
 /**
  * @return {THREE.WebGLRenderer} 返回部分初始化的webGlrenderer对象
  */
@@ -88,12 +88,37 @@ function controls(camera,dom) {
 /**
  * 初始化性能插件
  * @param {HTMLElement} dom
+ * @return {Stats}
  */
 function StatsStart(dom) {
   dom = dom||document.body
-  dom.appendChild(new Stats().dom)
+  let stats = new Stats()
+  dom.appendChild(stats.dom)
+  return stats
 }
 
+/**
+ *
+ * @return {dat.GUI}
+ */
+function initGUI() {
+  window.gui = new dat.GUI()
+}
+
+/**
+ * 当窗口宽高变化时执行
+ * @param {THREE.PerspectiveCamera} camera
+ * @param {THREE.WebGLRenderer} renderer
+ */
+function onWindowResize(camera,renderer) {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(
+      window.innerWidth * 1,
+      window.innerHeight * 1
+  );
+  renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+}
 /**
  * 大方盒子的天空盒，缩放小了能看出来
  * @param {THREE.Scene} scene 场景
@@ -126,6 +151,8 @@ export default {
   camera,
   scene,
   controls,
+  initGUI,
   StatsStart,
-  initSkyByMesh
+  onWindowResize,
+  initSkyByMesh,
 }
