@@ -10,10 +10,11 @@ class Web3DScene {
     this.renderer = Start.renderer()
     this.scene = Start.scene()
     this.camera = Start.camera()
+    Start.initSkyByMesh(this.scene,this.renderer)
+
     window.onresize = Start.onWindowResize(this.camera,this.renderer)
     this.controls = Start.controls(this.camera,this.renderer.domElement)
-    Start.initSkyByMesh(this.scene,this.renderer)
-    new ChooseShader(this.scene,this.camera,this.gui)
+    new ChooseShader(this.scene,this.camera)
     this.animation()
   }
   animation(){
