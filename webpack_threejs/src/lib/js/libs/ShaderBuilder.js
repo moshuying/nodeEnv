@@ -25,6 +25,10 @@ class ShaderBuilder {
     this.shader.fragmentShader = code;
     return this
   }
+  setVertexSHader(code){
+    this.shader.vertexShader = code
+    return this
+  }
   /**
    * 返回 THREE.ShaderMaterial
    * @return {ShaderMaterial} THREE.ShaderMaterial

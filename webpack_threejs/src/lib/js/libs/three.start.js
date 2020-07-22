@@ -2,37 +2,41 @@ import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module";
 import {Sky} from "three/examples/jsm/objects/Sky";
+import {ShaderPass} from  'three/examples/jsm/postprocessing/ShaderPass'
+import {EffectComposer} from  'three/examples/jsm/postprocessing/EffectComposer'
+import {FXAAShader} from  'three/examples/jsm/shaders/FXAAShader'
 import dat from "three/examples/jsm/libs/dat.gui.module";
+
 /**
  * @return {THREE.WebGLRenderer} 返回部分初始化的webGlrenderer对象
  */
-function renderer(){
-  let renderer = new THREE.WebGLRenderer()
-  renderer.setSize(
-    window.innerWidth * 1,
-    window.innerHeight * 1
-  );
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.setClearColor(0xffea00, 0.5); //默认填充颜色
-  renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.5;
-  renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
-  renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
-  document.body.appendChild(renderer.domElement);
-  renderer.autoClear = false;
-  renderer.debug.checkShaderErrors = false;
-  return renderer
+function renderer() {
+    let renderer = new THREE.WebGLRenderer()
+    renderer.setSize(
+        window.innerWidth * 1,
+        window.innerHeight * 1
+    );
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.setClearColor(0xffea00, 0.5); //默认填充颜色
+    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.5;
+    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
+    renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+    document.body.appendChild(renderer.domElement);
+    renderer.autoClear = false;
+    renderer.debug.checkShaderErrors = false;
+    return renderer
 }
 
 /**
  * @return {THREE.PerspectiveCamera} 返回透视摄像机
  */
-function camera(){
-  let camera = new THREE.PerspectiveCamera(75,window.innerWidth/ window.innerHeight,0.1,10000)
-  camera.position.set(10,10,10)
-  return camera
+function camera() {
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000)
+    camera.position.set(10, 10, 10)
+    return camera
 }
 
 /**
@@ -40,14 +44,14 @@ function camera(){
  * @returns {THREE.Scene} 返回部分初始化的THREE场景
  */
 function scene() {
-  const scene = new THREE.Scene()
-  scene.background = new THREE.Color(0xe3e3e3)
-  scene.add(new THREE.AxesHelper(10))
-  const light = new THREE.DirectionalLight(0xffffff);
-  light.castShadow = true;
-  scene.add(light)
-  scene.autoUpdate = true;
-  return scene;
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color(0xe3e3e3)
+    scene.add(new THREE.AxesHelper(10))
+    const light = new THREE.DirectionalLight(0xffffff);
+    light.castShadow = true;
+    scene.add(light)
+    scene.autoUpdate = true;
+    return scene;
 }
 
 /**
@@ -56,33 +60,33 @@ function scene() {
  * @param {HTMLCanvasElement} dom
  * @returns {OrbitControls}
  */
-function controls(camera,dom) {
-  const controls = new OrbitControls(camera,dom)
+function controls(camera, dom) {
+    const controls = new OrbitControls(camera, dom)
 
-  // 如果使用animate方法时，将此函数删除
-  //controls.addEventListener( 'change', render );
+    // 如果使用animate方法时，将此函数删除
+    //controls.addEventListener( 'change', render );
 
-  // 使动画循环使用时阻尼或自转 意思是否有惯性
-  controls.enableDamping = true;
+    // 使动画循环使用时阻尼或自转 意思是否有惯性
+    controls.enableDamping = true;
 
-  //动态阻尼系数 就是鼠标拖拽旋转灵敏度
-  //controls.dampingFactor = 0.25;
+    //动态阻尼系数 就是鼠标拖拽旋转灵敏度
+    //controls.dampingFactor = 0.25;
 
-  //是否可以缩放
-  controls.enableZoom = true;
+    //是否可以缩放
+    controls.enableZoom = true;
 
-  //是否自动旋转
-  controls.autoRotate = false;
+    //是否自动旋转
+    controls.autoRotate = false;
 
-  //设置相机距离原点的最近距离
-  // controls.minDistance = 50;
+    //设置相机距离原点的最近距离
+    // controls.minDistance = 50;
 
-  //设置相机距离原点的最远距离
-  // controls.maxDistance = 200;
+    //设置相机距离原点的最远距离
+    // controls.maxDistance = 200;
 
-  //是否开启右键拖拽
-  controls.enablePan = true;
-  return controls
+    //是否开启右键拖拽
+    controls.enablePan = true;
+    return controls
 }
 
 /**
@@ -91,10 +95,10 @@ function controls(camera,dom) {
  * @return {Stats}
  */
 function StatsStart(dom) {
-  dom = dom||document.body
-  let stats = new Stats()
-  dom.appendChild(stats.dom)
-  return stats
+    dom = dom || document.body
+    let stats = new Stats()
+    dom.appendChild(stats.dom)
+    return stats
 }
 
 /**
@@ -102,57 +106,88 @@ function StatsStart(dom) {
  * @return {dat.GUI}
  */
 function initGUI() {
-  window.gui = new dat.GUI()
+    window.gui = new dat.GUI()
 }
 
 /**
  * 当窗口宽高变化时执行
  * @param {THREE.PerspectiveCamera} camera
  * @param {THREE.WebGLRenderer} renderer
+ * @example window.onresize = (e)=>{Start.onWindowResize(this.camera,this.renderer)}
  */
-function onWindowResize(camera,renderer) {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(
-      window.innerWidth * 1,
-      window.innerHeight * 1
-  );
-  renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+function onWindowResize(camera, renderer) {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(
+        window.innerWidth * 1,
+        window.innerHeight * 1
+    );
+    renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
 }
+
 /**
  * 大方盒子的天空盒，缩放小了能看出来
  * @param {THREE.Scene} scene 场景
  * @param {THREE.WebGLRenderer} renderer 渲染器
  * @param {number} scalar 缩放数值
  */
-function initSkyByMesh(scene,renderer,scalar) {
-  let sky = new Sky();
-  sky.scale.setScalar(scalar||10000);
-  scene.add(sky);
+function initSkyByMesh(scene, renderer, scalar) {
+    let sky = new Sky();
+    sky.scale.setScalar(scalar || 10000);
+    scene.add(sky);
 
-  let uniforms = sky.material.uniforms;
-  uniforms["turbidity"].value = 10;
-  uniforms["rayleigh"].value = 2;
-  uniforms["mieCoefficient"].value = 0.005;
-  uniforms["mieDirectionalG"].value = 0.8;
+    let uniforms = sky.material.uniforms;
+    uniforms["turbidity"].value = 10;
+    uniforms["rayleigh"].value = 2;
+    uniforms["mieCoefficient"].value = 0.005;
+    uniforms["mieDirectionalG"].value = 0.8;
 
-  let pmremGenerator = new THREE.PMREMGenerator(renderer);
-  let theta = Math.PI * (0.49 - 0.5);
-  let phi = 2 * Math.PI * ( 0.205 - 0.5);
-  let sun = new THREE.Vector3()
-  sun.x = Math.cos(phi)
-  sun.y = Math.sin(phi) * Math.sin(theta)
-  sun.z = Math.sin(phi) * Math.cos(theta)
-  sky.material.uniforms["sunPosition"].value.copy(sun)
-  scene.environment = pmremGenerator.fromScene(sky).texture
+    let pmremGenerator = new THREE.PMREMGenerator(renderer);
+    let theta = Math.PI * (0.49 - 0.5);
+    let phi = 2 * Math.PI * (0.205 - 0.5);
+    let sun = new THREE.Vector3()
+    sun.x = Math.cos(phi)
+    sun.y = Math.sin(phi) * Math.sin(theta)
+    sun.z = Math.sin(phi) * Math.cos(theta)
+    sky.material.uniforms["sunPosition"].value.copy(sun)
+    scene.environment = pmremGenerator.fromScene(sky).texture
+}
+
+/**
+ * 地板割线
+ * @param {THREE.Scene} scene
+ */
+function initFloorBoard(scene,size,divisions) {
+    let grid = new THREE.GridHelper(size, divisions, 0xffffff, 0xffffff);
+    grid.material.opacity = 0.3;
+    grid.material.transparent = true;
+    scene.add(grid);
+}
+
+/**
+ * 抗锯齿
+ * @param {THREE.Scene} scene
+ * @param {THREE.WebGLRenderer} renderer 渲染器
+ * @return {EffectComposer}
+ */
+function initFxaa(scene,renderer) {
+  FXAAShader.uniforms.resolution.value.x = 1 / (window.innerWidth * window.devicePixelRatio)
+  FXAAShader.uniforms.resolution.value.y = 1 / (window.innerHeight * window.devicePixelRatio)
+  let fxaa = new ShaderPass(FXAAShader)
+  let composer = new EffectComposer(renderer)
+  composer.renderToScreen = true
+  composer.addPass(fxaa)
+  return composer
 }
 export default {
-  renderer,
-  camera,
-  scene,
-  controls,
-  initGUI,
-  StatsStart,
-  onWindowResize,
-  initSkyByMesh,
+    renderer,
+    camera,
+    scene,
+    controls,
+    initGUI,
+    StatsStart,
+    onWindowResize,
+    initSkyByMesh,
+    initFloorBoard,
+    initFxaa
 }
