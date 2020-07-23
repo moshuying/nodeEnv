@@ -11,22 +11,22 @@ import dat from "three/examples/jsm/libs/dat.gui.module";
  * @return {THREE.WebGLRenderer} 返回部分初始化的webGlrenderer对象
  */
 function renderer() {
-    let renderer = new THREE.WebGLRenderer()
+    let renderer = new THREE.WebGLRenderer({antialias:true})
     renderer.setSize(
         window.innerWidth * 1,
         window.innerHeight * 1
     );
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.setClearColor(0xffea00, 0.5); //默认填充颜色
-    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.5;
-    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
-    renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+    // renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.setClearColor(0xffffff, 1); //默认填充颜色
+    // renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
+    // renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
+    // renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    // renderer.toneMappingExposure = 0.5;
+    // renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
+    // renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
-    renderer.autoClear = false;
-    renderer.debug.checkShaderErrors = false;
+    // renderer.autoClear = false;
+    // renderer.debug.checkShaderErrors = false;
     return renderer
 }
 
@@ -45,12 +45,39 @@ function camera() {
  */
 function scene() {
     const scene = new THREE.Scene()
+    scene.autoUpdate = true;
+
+    scene.name = 'indexScene'
     scene.background = new THREE.Color(0xe3e3e3)
     scene.add(new THREE.AxesHelper(10))
-    const light = new THREE.DirectionalLight(0xffffff);
-    light.castShadow = true;
-    scene.add(light)
-    scene.autoUpdate = true;
+    let ambientLight = new THREE.AmbientLight("#111111");
+    scene.add(ambientLight);
+
+    let directionalLight = new THREE.DirectionalLight("#ffffff");
+    directionalLight.position.set(-40, 12, -130);
+
+    directionalLight.shadow.camera.near = 20; //产生阴影的最近距离
+    directionalLight.shadow.camera.far = 200; //产生阴影的最远距离
+    directionalLight.shadow.camera.left = -50; //产生阴影距离位置的最左边位置
+    directionalLight.shadow.camera.right = 50; //最右边
+    directionalLight.shadow.camera.top = 50; //最上边
+    directionalLight.shadow.camera.bottom = -50; //最下面
+
+    //这两个值决定使用多少像素生成阴影 默认512
+    directionalLight.shadow.mapSize.height = 8192;
+    directionalLight.shadow.mapSize.width = 8192;
+    //告诉平行光需要开启阴影投射
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+    // let debug = new THREE.CameraHelper(directionalLight.shadow.camera);
+    // debug.name = "debug";
+    // scene.add(debug);
+    let plan = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000),new THREE.MeshLambertMaterial({color:0xaaaaaa}))
+    plan.name='plan'
+    plan.rotation.x = -0.5 * Math.PI
+    plan.position.y = -0
+    plan.receiveShadow = true
+    scene.add(plan)
     return scene;
 }
 
@@ -126,7 +153,7 @@ function onWindowResize(camera, renderer) {
 }
 
 /**
- * 大方盒子的天空盒，缩放小了能看出来
+ * 大方盒子的天空盒，附带光源，缩放小了能看出来
  * @param {THREE.Scene} scene 场景
  * @param {THREE.WebGLRenderer} renderer 渲染器
  * @param {number} scalar 缩放数值
@@ -151,6 +178,10 @@ function initSkyByMesh(scene, renderer, scalar) {
     sun.z = Math.sin(phi) * Math.cos(theta)
     sky.material.uniforms["sunPosition"].value.copy(sun)
     scene.environment = pmremGenerator.fromScene(sky).texture
+
+    let dirLight = new THREE.DirectionalLight(0xffffff,0.5)
+    dirLight.position.set(-500,10,-2000)
+    scene.add(dirLight)
 }
 
 /**
@@ -179,6 +210,14 @@ function initFxaa(scene,renderer) {
   composer.addPass(fxaa)
   return composer
 }
+function logImage(base64){
+    console.log("%c+",
+  `background-image: url(${base64});
+  background-size: contain;
+  background-repeat: no-repeat;
+  color: transparent;`);
+}
+window.console.logImage = logImage
 export default {
     renderer,
     camera,
