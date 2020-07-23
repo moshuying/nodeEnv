@@ -18,11 +18,22 @@ export default class Scan {
         this.renderer = renderer
 
         this.depthScene = new THREE.Scene()
+        this.depthScene.autoUpdate = true;
         this.depthScene.name = 'depthScene'
-        this.depthScene.add(new THREE.AxesHelper(10))
-        this.depthCamera = new THREE.OrthographicCamera( window.innerWidth / - 100, window.innerWidth / 100, window.innerHeight / 100, window.innerHeight / - 100, 0, 40 )
+
+        this.depthCamera = new THREE.OrthographicCamera(
+            window.innerWidth / - 50,
+            window.innerWidth / 50,
+            window.innerHeight / 50,
+            window.innerHeight / - 50,
+            0,
+            40 )
         this.depthCamera.position.set(0,20,0);
         this.depthCamera.lookAt(0,0,0);
+
+        this.group = new THREE.Group()
+        this.group.name = 'scanGroup'
+
         this.depthTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight)
 
         this.depthMaterial = new THREE.ShaderMaterial({
@@ -50,24 +61,27 @@ export default class Scan {
             }
             `
         })
+        // this.group.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1,10,1),this.depthMaterial))
+        // this.depthScene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1,10,1),this.depthMaterial))
+        // this.depthScene.add(this.group)
         this.init(10)
     }
     init(num){
-        this.geoGroup = new THREE.Group()
-        this.geoGroup = 'scanGroup'
         let num2 = null
         for(let i = 0;i<num;i++){
             num2 = Math.random()*10
             let box = new THREE.Mesh(new THREE.BoxBufferGeometry( 1, num2, 1),this.depthMaterial)
             box.position.set(i*2+0.5,num2/2,0)
             box.castShadow = true
-            this.depthScene.add(box)
-            this.scene.add(box)
+            this.group.add(box)
+            // this.scene.add(box)
         }
         // this.scene.add(this.geoGroup)
+        // this.depthScene.add(group)
+        this.depthScene.add(this.group)
     }
     render() {
-        this.render.render(this.depthScene,this.depthCamera)
+        this.renderer.render(this.depthScene,this.depthCamera)
         // this.renderer.render(this.scene,this.depthCamera)
         // this.scene.getObjectByName('plan').material.map = this.depthTarget.texture
     }

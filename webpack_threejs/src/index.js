@@ -1,6 +1,6 @@
 // import './lib/js/libs/global'
 import Start from "./lib/js/libs/three.start"
-import Scan from './lib/effectStore/scan'
+import Scan from './lib/effectStore/Scan'
 class Web3DScene {
   constructor(){
     Start.initGUI()
@@ -13,7 +13,7 @@ class Web3DScene {
     Start.initFloorBoard(this.scene,1000,100)
     this.controls = Start.controls(this.camera,this.renderer.domElement)
 
-    this.register(new Scan(this.scene,this.camera,this.renderer,{}))
+    this.register(new Scan(this.scene,this.camera,this.renderer))
     window.onresize = (e)=>{Start.onWindowResize(this.camera,this.renderer)}
     this.animation()
   }
