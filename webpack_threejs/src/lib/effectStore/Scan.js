@@ -54,7 +54,7 @@ export default class Scan {
         this.depthScene.add(this.group.clone(true))
         this.scene.add(this.group)
 
-        this.circleGeo = new THREE.RingBufferGeometry(1.5, 1.6, 1000, 1, 0)
+        this.circleGeo = new THREE.RingBufferGeometry(1.5, 1.6, 1000, 1000, 0)
         this.circleMat = new THREE.ShaderMaterial({
             uniforms: {
                 uDepthProjMatrixInverse: {
@@ -105,13 +105,14 @@ export default class Scan {
         this.circle.position.y = 0.1
         this.circle.scaleNum=1
         this.scene.add(this.circle)
+
         this.renderer.setRenderTarget(this.depthTarget)
         this.renderer.render(this.depthScene,this.depthCamera)
         this.renderer.setRenderTarget(null)
     }
 
     render() {
-        if(this.circle.scale.x>=10){
+        if(this.circle.scale.x>=20){
             this.circle.scale.set(1,1,1)
             this.circle.scaleNum = 1
         }else{
