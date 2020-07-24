@@ -105,7 +105,9 @@ export default class Scan {
         this.circle.position.y = 0.1
         this.circle.scaleNum=1
         this.scene.add(this.circle)
-
+        this.renderer.setRenderTarget(this.depthTarget)
+        this.renderer.render(this.depthScene,this.depthCamera)
+        this.renderer.setRenderTarget(null)
     }
 
     render() {
@@ -115,8 +117,5 @@ export default class Scan {
         }else{
             this.circle.scale.set(this.circle.scaleNum+=0.005,this.circle.scaleNum+=0.005,this.circle.scaleNum+=0.005)
         }
-        this.renderer.setRenderTarget(this.depthTarget)
-        this.renderer.render(this.depthScene,this.depthCamera)
-        this.renderer.setRenderTarget(null)
     }
 }
