@@ -54,7 +54,7 @@ function scene() {
     scene.add(ambientLight);
 
     let directionalLight = new THREE.DirectionalLight("#ffffff");
-    directionalLight.position.set(-40, 12, -130);
+    // directionalLight.position.set(-40, 12, -130);
 
     directionalLight.shadow.camera.near = 20; //产生阴影的最近距离
     directionalLight.shadow.camera.far = 200; //产生阴影的最远距离
@@ -72,7 +72,7 @@ function scene() {
     // let debug = new THREE.CameraHelper(directionalLight.shadow.camera);
     // debug.name = "debug";
     // scene.add(debug);
-    let plan = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000),new THREE.MeshLambertMaterial({color:0xaaaaaa}))
+    let plan = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000),new THREE.MeshBasicMaterial({color:0xc3c3c3}))
     plan.name='plan'
     plan.rotation.x = -0.5 * Math.PI
     plan.position.y = -0

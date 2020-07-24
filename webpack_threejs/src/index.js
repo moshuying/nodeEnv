@@ -4,25 +4,27 @@ import Scan from './lib/effectStore/Scan'
 class Web3DScene {
   constructor(){
     Start.initGUI()
-    this.stats = Start.StatsStart()
+    this.stats = Start.StatsStart(document.body)
     this.renderer = Start.renderer()
     this.scene = Start.scene()
     this.camera = Start.camera()
     this.registerAll = []
-    Start.initSkyByMesh(this.scene,this.renderer)
+    Start.initSkyByMesh(this.scene,this.renderer,10000)
     Start.initFloorBoard(this.scene,1000,100)
-    this.controls = Start.controls(this.camera,this.renderer.domElement)
+    Start.controls(this.camera,this.renderer.domElement)
 
     this.register(new Scan(this.scene,this.camera,this.renderer))
-    window.onresize = (e)=>{Start.onWindowResize(this.camera,this.renderer)}
+    window.onresize = ()=>{Start.onWindowResize(this.camera,this.renderer)}
     this.animation()
   }
   animation(){
-      for(const key in this.registerAll){
-          this.registerAll[key].render()
-      }
       this.stats.update()
-      // this.renderer.render(this.scene,this.camera)
+      for(const key in this.registerAll){
+          if(this.registerAll.hasOwnProperty(key)){
+            this.registerAll[key].render()
+          }
+      }
+      this.renderer.render(this.scene,this.camera)
       window.requestAnimationFrame(Web3DScene.prototype.animation.bind(this))
   }
     /**
