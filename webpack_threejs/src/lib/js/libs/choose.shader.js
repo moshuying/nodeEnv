@@ -126,33 +126,7 @@ class ChooseShader {
       }
       void main() {
         gl_FragColor = red();
-      }`).build(),
-      new ShaderBuilder().setfragmentShader(`
-      #ifdef GL_ES
-      precision mediump float;
-      #endif
-      uniform float ratio;
-      void main() {
-        gl_FragColor = vec4(abs(sin(ratio*2.0)),0.775,0.211,1.0);
-      }
-      `).setuniforms(window.uniforms).build(),
-      new ShaderBuilder().setfragmentShader(`
-      #ifdef GL_ES
-      precision mediump float;
-      #endif
-      void main() {
-        vec2 st = gl_FragCoord.xy/gl_FragCoord.x;
-        gl_FragColor = vec4(st.x,st.y,0.0,1.0);
-      }`).build(),
-      new ShaderBuilder().setfragmentShader(`
-      #ifdef GL_ES
-      precision mediump float;
-      #endif
-      void main() {
-        vec2 st = gl_FragCoord.xy/vec2(300.,300.);
-        gl_FragColor = vec4(st.x,st.y,0.776,1.0);
-      }
-      `).build(),
+      }`).build()
     ]
   }
 }
