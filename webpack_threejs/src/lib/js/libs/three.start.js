@@ -34,7 +34,7 @@ function renderer() {
  * @return {THREE.PerspectiveCamera} 返回透视摄像机
  */
 function camera() {
-    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000)
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000000000)
     camera.position.set(10, 10, 10)
     return camera
 }
@@ -49,7 +49,7 @@ function scene() {
 
     scene.name = 'indexScene'
     scene.background = new THREE.Color(0xe3e3e3)
-    scene.add(new THREE.AxesHelper(10))
+    scene.add(new THREE.AxesHelper(1000000))
     let ambientLight = new THREE.AmbientLight("#111111");
     scene.add(ambientLight);
 

@@ -11,21 +11,22 @@ export default class Scan {
      * @param {THREE.WebGLRenderer} renderer
      * @param {object} config
      */
-    constructor(scene, camera, renderer) {
+    constructor(box) {
         this.name = 'Scan'
-        this.scene = scene
-        this.camera = camera
-        this.renderer = renderer
+        this.scene =box.scene
+        this.camera =box.camera
+        this.renderer =box.renderer
 
         this.depthScene = new THREE.Scene()
         this.depthScene.autoUpdate = true;
         this.depthScene.name = 'depthScene'
 
+        this.mountArray = ['addScan']
         this.depthCamera = new THREE.OrthographicCamera(
-            window.innerWidth / -50,
-            window.innerWidth / 50,
-            window.innerHeight / 50,
-            window.innerHeight / -50,
+            window.innerWidth / -20,
+            window.innerWidth / 20,
+            window.innerHeight / 20,
+            window.innerHeight / -20,
             0,
             40)
         this.depthCamera.position.set(0, 20, 0);
@@ -42,6 +43,18 @@ export default class Scan {
         this.init(10)
     }
 
+    addScan(box,cb){
+        let mesh = null
+        if(cb){
+            mesh = cb(new THREE.Mesh(box.geometry,this.depthMaterial))
+        }else{
+            mesh = box
+        }
+        this.depthScene.add(mesh)
+        this.renderer.setRenderTarget(this.depthTarget)
+        this.renderer.render(this.depthScene,this.depthCamera)
+        this.renderer.setRenderTarget(null)
+    }
     init(num) {
         let num2 = null
         for (let i = 0; i < num; i++) {
