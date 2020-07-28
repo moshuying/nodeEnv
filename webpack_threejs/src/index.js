@@ -16,7 +16,7 @@ class Web3DScene {
     Start.controls(this.camera,this.renderer.domElement)
 
     this.register(new Scan(this));
-    this.register(new Test(this))
+    // this.register(new Test(this))
     window.onresize = ()=>{Start.onWindowResize(this.camera,this.renderer)}
     window.lib = {scene:this.scene,camera:this.camera,renderer:this.renderer,THREE}
     this.animation()

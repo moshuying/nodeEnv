@@ -11,11 +11,12 @@ export default class Scan {
      * @param {THREE.WebGLRenderer} renderer
      * @param {object} config
      */
-    constructor(box) {
+    constructor(threebox) {
         this.name = 'Scan'
-        this.scene =box.scene
-        this.camera =box.camera
-        this.renderer =box.renderer
+        this.threebox = threebox
+        this.scene =threebox.scene
+        this.camera =threebox.camera
+        this.renderer =threebox.renderer
 
         this.depthScene = new THREE.Scene()
         this.depthScene.autoUpdate = true;
@@ -41,14 +42,15 @@ export default class Scan {
             fragmentShader: `varying float vDepth;void main() {gl_FragColor = vec4(vDepth,vDepth,vDepth,1);}`
         })
         this.init(10)
+        this.player()
     }
 
-    addScan(box,cb){
+    addScan(threebox,cb){
         let mesh = null
         if(cb){
-            mesh = cb(new THREE.Mesh(box.geometry,this.depthMaterial))
+            mesh = cb(new THREE.Mesh(threebox.geometry,this.depthMaterial))
         }else{
-            mesh = box
+            mesh = threebox
         }
         this.depthScene.add(mesh)
         this.renderer.setRenderTarget(this.depthTarget)
@@ -59,10 +61,10 @@ export default class Scan {
         let num2 = null
         for (let i = 0; i < num; i++) {
             num2 = Math.random() * 10
-            let box = new THREE.Mesh(new THREE.BoxBufferGeometry(1, num2, 1), this.depthMaterial)
-            box.position.set(i * 2 + 0.5, num2 / 2, num2/2+1)
-            box.castShadow = true
-            this.group.add(box)
+            let threebox = new THREE.Mesh(new THREE.BoxBufferGeometry(1, num2, 1), this.depthMaterial)
+            threebox.position.set(i * 2 + 0.5, num2 / 2, num2/2+1)
+            threebox.castShadow = true
+            this.group.add(threebox)
         }
         this.depthScene.add(this.group.clone(true))
         this.scene.add(this.group)
@@ -123,7 +125,36 @@ export default class Scan {
         this.renderer.render(this.depthScene,this.depthCamera)
         this.renderer.setRenderTarget(null)
     }
+    player(){
+        let shapes = new THREE.Shape();
+        shapes.moveTo( 0,0 );
+        shapes.lineTo( 0, 8 );
+        shapes.lineTo( 12, 8 );
+        shapes.lineTo( 12, 0 );
+        shapes.lineTo( 0, 0 );
 
+        let geometry = new THREE.ExtrudeBufferGeometry( shapes, {
+            steps: 1,
+            depth: 16,
+            bevelEnabled: true,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelOffset: 0,
+            bevelSegments: 1
+        } );
+        let materials = new THREE.MeshBasicMaterial( { color: 0x0cc100 } );
+        let meshs = new THREE.Mesh( geometry, materials ) ;
+        let geo2 = new THREE.EdgesGeometry( meshs.geometry );
+        let mat2 = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
+        let wireframe2 = new THREE.LineSegments( geo2, mat2 );
+        wireframe2.position.set(0,0,-16)
+        meshs.position.set(0,0,-16)
+        this.scene.add( meshs,wireframe2 );
+        this.addScan(meshs,(el)=>{
+            el.position.set(0,0,-16)
+            return el
+        })
+    }
     render() {
         if(this.circle.scale.x>=20){
             this.circle.scale.set(1,1,1)

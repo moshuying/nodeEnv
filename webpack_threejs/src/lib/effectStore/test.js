@@ -1,35 +1,23 @@
 import * as THREE from 'three'
 import {SVGLoader} from 'three/examples/jsm/loaders/SVGLoader'
 const each = ( obj, callback ) =>{
-    var length, i = 0;
+    let length, i = 0;
     function isWindow( obj ) {
         return obj != null && obj === obj.window;
     };
     function isFunction( obj ) {
-
-        // Support: Chrome <=57, Firefox <=52
-        // In some browsers, typeof returns "function" for HTML <object> elements
-        // (i.e., `typeof document.createElement( "object" ) === "function"`).
-        // We don't want to classify *any* DOM node as a function.
         return typeof obj === "function" && typeof obj.nodeType !== "number";
     };
     function toType( obj ) {
         if ( obj == null ) {
             return obj + "";
         }
-
-        // Support: Android <=2.3 only (functionish RegExp)
         return typeof obj === "object" || typeof obj === "function" ?
             {}[ toString.call( obj ) ] || "object" :
             typeof obj;
     }
     function isArrayLike( obj ) {
-
-        // Support: real iOS 8.2 only (not reproducible in simulator)
-        // `in` check used to prevent JIT error (gh-2145)
-        // hasOwn isn't used here due to false negatives
-        // regarding Nodelist length in IE
-        var length = !!obj && "length" in obj && obj.length,
+        let length = !!obj && "length" in obj && obj.length,
             type = toType( obj );
 
         if ( isFunction( obj ) || isWindow( obj ) ) {
@@ -228,36 +216,6 @@ export default class Test{
     }
     render(){
 
-    }
-    player(){
-        let shapes = new THREE.Shape();
-        shapes.moveTo( 0,0 );
-        shapes.lineTo( 0, 8 );
-        shapes.lineTo( 12, 8 );
-        shapes.lineTo( 12, 0 );
-        shapes.lineTo( 0, 0 );
-
-        let geometry = new THREE.ExtrudeBufferGeometry( shapes, {
-            steps: 1,
-            depth: 16,
-            bevelEnabled: true,
-            bevelThickness: 1,
-            bevelSize: 1,
-            bevelOffset: 0,
-            bevelSegments: 1
-        } );
-        let materials = new THREE.MeshBasicMaterial( { color: 0x0cc100 } );
-        let meshs = new THREE.Mesh( geometry, materials ) ;
-        let geo2 = new THREE.EdgesGeometry( meshs.geometry );
-        let mat2 = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
-        let wireframe2 = new THREE.LineSegments( geo2, mat2 );
-        wireframe2.position.set(0,0,-16)
-        meshs.position.set(0,0,-16)
-        this.scene.add( meshs,wireframe2 );
-        this.box.addScan(meshs,(el)=>{
-            el.position.set(0,0,-16)
-            return el
-        })
     }
 }
 const text =

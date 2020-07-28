@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body,html {
+            margin: 0;
+            padding:0;
+            width:100%;
+            height:100%;
+        }
+    </style>
+</head>
+<script type="module">
+    import {xMenu} from "./xMenu.js";
+    let menu = xMenu({
+        removeBuild:{
+            type:'primaryBtn',
+            name:'删除\n建筑',
+            fn:function(){
+            }
+        }
+    })
+
+    // window.body.onclick = function(e){
+    //     console.log(e)
+    //     // menu.positions()
+    // }
+</script>
+<body>
+</body>
+</html>
