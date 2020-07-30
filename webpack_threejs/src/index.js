@@ -22,30 +22,34 @@ class Web3DScene {
         Start.initFloorBoard(this.scene, 1000, 100,this.BaseGroup)
         Start.controls(this.camera, this.renderer.domElement)
 
-        this.resizeEvent = []
         this.registerAll = []
+        this.resizeEvent = []
+        this.clickEvent = []
 
         this.register(new Scan(this))
         this.register(new Test(this))
 
         this.disRegisterAll()
         this.register(new Shine(this))
+
         this.resizeEvent.push(()=>{Start.onWindowResize(this.camera, this.renderer)})
-        window.onresize = () => {
-            this.resizeEvent.forEach(el=>el())
-        }
-        window.lib = {scene: this.scene, camera: this.camera, renderer: this.renderer, THREE}
+        window.onresize = () => {this.resizeEvent.forEach(el=>el())}
+        document.getElementsByTagName('body')[0].addEventListener('click',(e)=>{
+            this.clickEvent.forEach(el=>el(e))
+        })
+
+        window.lib = {scene: this.scene, camera: this.camera, renderer: this.renderer, THREE,Web3DScene:this}
         this.animation()
     }
 
     animation() {
         this.stats.update()
+        this.renderer.render(this.scene, this.camera)
         for (const key in this.registerAll) {
             if (this.registerAll.hasOwnProperty(key)) {
                 this.registerAll[key].render()
             }
         }
-        this.renderer.render(this.scene, this.camera)
         window.requestAnimationFrame(Web3DScene.prototype.animation.bind(this))
     }
 
@@ -58,8 +62,13 @@ class Web3DScene {
         if (sub.mountArray) {
             this.registerArray(sub.mountArray, sub)
         }
-        if(sub.resizeEvent){
-            this.resizeEvent.push(sub.resizeEvent())
+        // 事件注册
+        if(sub.Event){
+            for(const eventName in sub.Event){
+                if(sub.Event.hasOwnProperty(eventName)){
+                    this[eventName].push(sub.Event[eventName])
+                }
+            }
         }
 
     }
