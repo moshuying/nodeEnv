@@ -2,59 +2,59 @@ import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import Stats from "three/examples/jsm/libs/stats.module";
 import {Sky} from "three/examples/jsm/objects/Sky";
-import {ShaderPass} from  'three/examples/jsm/postprocessing/ShaderPass'
-import {EffectComposer} from  'three/examples/jsm/postprocessing/EffectComposer'
-import {FXAAShader} from  'three/examples/jsm/shaders/FXAAShader'
-import dat from "three/examples/jsm/libs/dat.gui.module";
 
+import {GUI} from "three/examples/jsm/libs/dat.gui.module";
+const {Scene,PerspectiveCamera,WebGLRenderer,Group} = THREE
 /**
- * @return {THREE.WebGLRenderer} 返回部分初始化的webGlrenderer对象
+ * @return {WebGLRenderer} 返回部分初始化的WebGLRenderer对象
  */
 function renderer() {
     let renderer = new THREE.WebGLRenderer({antialias:true})
-    renderer.setSize(
-        window.innerWidth * 1,
-        window.innerHeight * 1
-    );
+    renderer.setSize(window.innerWidth, window.innerHeight);
     // renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.setClearColor(0xffffff, 1); //默认填充颜色
-    // renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
-    // renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-    // renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    // renderer.toneMappingExposure = 0.5;
-    // renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
+    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.5;
+    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
     // renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
     document.body.appendChild(renderer.domElement);
-    // renderer.autoClear = false;
-    // renderer.debug.checkShaderErrors = false;
+    renderer.autoClear = false;
+    renderer.debug.checkShaderErrors = false;
     return renderer
 }
 
 /**
- * @return {THREE.PerspectiveCamera} 返回透视摄像机
+ * @return {PerspectiveCamera} 返回透视摄像机
  */
 function camera() {
-    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000000000)
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000)
     camera.position.set(10, 10, 10)
     return camera
 }
 
 /**
- *
- * @returns {THREE.Scene} 返回部分初始化的THREE场景
+ * @param {Group} group
+ * @returns {Scene} 返回部分初始化的THREE场景
  */
-function scene() {
+function scene(group) {
     const scene = new THREE.Scene()
     scene.autoUpdate = true;
-
     scene.name = 'indexScene'
     scene.background = new THREE.Color(0xe3e3e3)
-    scene.add(new THREE.AxesHelper(1000000))
+    // 添加原点辅助
+    let helper =new THREE.AxesHelper(10)
+    helper.name = '原点辅助'
+    group.add(helper)
+
     let ambientLight = new THREE.AmbientLight("#111111");
-    scene.add(ambientLight);
+    ambientLight.name = '环境光'
+    group.add(ambientLight);
 
     let directionalLight = new THREE.DirectionalLight("#ffffff");
-    // directionalLight.position.set(-40, 12, -130);
+    directionalLight.name = '平行光'
+    directionalLight.position.set(-40, 12, -130);
 
     directionalLight.shadow.camera.near = 20; //产生阴影的最近距离
     directionalLight.shadow.camera.far = 200; //产生阴影的最远距离
@@ -68,22 +68,23 @@ function scene() {
     directionalLight.shadow.mapSize.width = 8192;
     //告诉平行光需要开启阴影投射
     directionalLight.castShadow = true;
-    scene.add(directionalLight);
+    group.add(directionalLight);
     // let debug = new THREE.CameraHelper(directionalLight.shadow.camera);
     // debug.name = "debug";
-    // scene.add(debug);
+    // group.add(debug);
     let plan = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000),new THREE.MeshBasicMaterial({color:0xc3c3c3}))
-    plan.name='plan'
+    plan.name='地板'
     plan.rotation.x = -0.5 * Math.PI
     plan.position.y = -0
     plan.receiveShadow = true
-    scene.add(plan)
+    group.add(plan)
+    scene.add(group)
     return scene;
 }
 
 /**
  * 初始化基本的controls
- * @param {THREE.PerspectiveCamera} camera
+ * @param {PerspectiveCamera} camera
  * @param {HTMLCanvasElement} dom
  * @returns {OrbitControls}
  */
@@ -130,38 +131,40 @@ function StatsStart(dom) {
 
 /**
  *
- * @return {dat.GUI}
+ * @return {GUI}
  */
 function initGUI() {
-    window.gui = new dat.GUI()
+    window.gui = new GUI()
 }
 
 /**
  * 当窗口宽高变化时执行
- * @param {THREE.PerspectiveCamera} camera
- * @param {THREE.WebGLRenderer} renderer
+ * @param {PerspectiveCamera} camera
+ * @param {WebGLRenderer} renderer
  * @example window.onresize = (e)=>{Start.onWindowResize(this.camera,this.renderer)}
  */
 function onWindowResize(camera, renderer) {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(
-        window.innerWidth * 1,
-        window.innerHeight * 1
+        window.innerWidth,
+        window.innerHeight
     );
-    renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
+    // renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
 }
 
 /**
  * 大方盒子的天空盒，附带光源，缩放小了能看出来
- * @param {THREE.Scene} scene 场景
- * @param {THREE.WebGLRenderer} renderer 渲染器
+ * @param {Scene} scene 场景
+ * @param {WebGLRenderer} renderer 渲染器
  * @param {number} scalar 缩放数值
+ * @param {Group} group
  */
-function initSkyByMesh(scene, renderer, scalar) {
+function initSkyByMesh(scene, renderer, scalar,group) {
     let sky = new Sky();
+    sky.name = '天空'
     sky.scale.setScalar(scalar || 10000);
-    scene.add(sky);
+    group.add(sky);
 
     let uniforms = sky.material.uniforms;
     uniforms["turbidity"].value = 10;
@@ -169,7 +172,6 @@ function initSkyByMesh(scene, renderer, scalar) {
     uniforms["mieCoefficient"].value = 0.005;
     uniforms["mieDirectionalG"].value = 0.8;
 
-    let pmremGenerator = new THREE.PMREMGenerator(renderer);
     let theta = Math.PI * (0.49 - 0.5);
     let phi = 2 * Math.PI * (0.205 - 0.5);
     let sun = new THREE.Vector3()
@@ -177,39 +179,23 @@ function initSkyByMesh(scene, renderer, scalar) {
     sun.y = Math.sin(phi) * Math.sin(theta)
     sun.z = Math.sin(phi) * Math.cos(theta)
     sky.material.uniforms["sunPosition"].value.copy(sun)
-    scene.environment = pmremGenerator.fromScene(sky).texture
-
-    let dirLight = new THREE.DirectionalLight(0xffffff,0.5)
-    dirLight.position.set(-500,10,-2000)
-    scene.add(dirLight)
 }
 
 /**
  * 地板割线
- * @param {THREE.Scene} scene
+ * @param {Scene} scene
+ * @param {number} size
+ * @param {number} divisions
+ * @param {Group} group
  */
-function initFloorBoard(scene,size,divisions) {
+function initFloorBoard(scene,size,divisions,group) {
     let grid = new THREE.GridHelper(size, divisions, 0xffffff, 0xffffff);
+    grid.name='地板割线'
     grid.material.opacity = 0.3;
     grid.material.transparent = true;
-    scene.add(grid);
+    group.add(grid);
 }
 
-/**
- * 抗锯齿
- * @param {THREE.Scene} scene
- * @param {THREE.WebGLRenderer} renderer 渲染器
- * @return {EffectComposer}
- */
-function initFxaa(scene,renderer) {
-  FXAAShader.uniforms.resolution.value.x = 1 / (window.innerWidth * window.devicePixelRatio)
-  FXAAShader.uniforms.resolution.value.y = 1 / (window.innerHeight * window.devicePixelRatio)
-  let fxaa = new ShaderPass(FXAAShader)
-  let composer = new EffectComposer(renderer)
-  composer.renderToScreen = true
-  composer.addPass(fxaa)
-  return composer
-}
 function logImage(base64){
     console.log("%c+",
   `background-image: url(${base64});
@@ -228,5 +214,4 @@ export default {
     onWindowResize,
     initSkyByMesh,
     initFloorBoard,
-    initFxaa
 }

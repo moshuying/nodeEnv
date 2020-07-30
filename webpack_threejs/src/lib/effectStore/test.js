@@ -65,7 +65,7 @@ function buildGeo(shapes,height,factor_side){
     };
 
     // let geometry = new THREE.ExtrudeBufferGeometry(shapes, extrudeSettings);
-    let geometry = new THREE.ShapeGeometry(shapes, extrudeSettings);
+    let geometry = new THREE.ShapeGeometry(shapes);
 
 
     //变成 buffergeo 以后才能有  attr 可以 使用， 同时做一份parameters  备用
@@ -153,12 +153,12 @@ function buildUv(geo){
     }
 }
 export default class Test{
-    constructor(box) {
+    constructor(threebox) {
         this.name = 'Test'
-        this.scene =box.scene
-        this.camera =box.camera
-        this.renderer =box.renderer
-        this.box =box
+        this.scene =threebox.scene
+        this.camera =threebox.camera
+        this.renderer =threebox.renderer
+        this.threebox =threebox
         let loader = new SVGLoader()
         let svg = loader.parse(text)
         let shape =svg.paths[3].toShapes(true)
@@ -184,35 +184,39 @@ export default class Test{
             shadowSide: THREE.DoubleSide
         } )];
         let boxT = buildGeo(shape,40,0.5)
-        let mesh = new THREE.Mesh(boxT,material)
-        mesh.name = 'buildGeo'
-        mesh.position.set(-41475.780,129184.430,0)
-        mesh.scale.set(40,40,1)
+        this.mesh = new THREE.Mesh(boxT,material)
+        this.mesh.name = 'buildGeo'
+        this.mesh.position.set(-41475.780,129184.430,0)
+        this.mesh.scale.set(40,40,1)
 
         let geometryPoints =  new THREE.BufferGeometry().setFromPoints(shape[0].getPoints())
-        let particles = new THREE.Points(geometryPoints,new THREE.PointsMaterial({color:0x0000ff,size:2}))
-        particles.name = 'adsfa'
-        particles.position.set(-41475.780,129184.430,0)
-        particles.scale.set(40,40,1)
-        let geo = new THREE.EdgesGeometry( mesh.geometry );
+        this.particles = new THREE.Points(geometryPoints,new THREE.PointsMaterial({color:0x0000ff,size:2}))
+        this.particles.name = 'adsfa'
+        this.particles.position.set(-41475.780,129184.430,0)
+        this.particles.scale.set(40,40,1)
+        let geo = new THREE.EdgesGeometry( this.mesh.geometry );
         let mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
         let wireframe = new THREE.LineSegments( geo, mat );
         wireframe.name='buildGeo'
         wireframe.position.set(-41475.780,129184.430,0)
         wireframe.scale.set(40,40,1)
-        box.addScan(mesh,(el)=>{
+        this.threebox.addScan(this.mesh,(el)=>{
             el.position.set(-41475.780,129184.430,0)
             el.scale.set(40,40,1)
             return el
         })
 
-        let boxCPos = particles.geometry.attributes.position.array
-        let [arr,world] = [[],particles.getWorldPosition(new THREE.Vector3())]
+        let boxCPos = this.particles.geometry.attributes.position.array
+        let [arr,world] = [[],this.particles.getWorldPosition(new THREE.Vector3())]
         for(let i = 0;i<boxCPos.length;i+=3){arr.push([boxCPos[i],boxCPos[i+1]])}
-        console.log(arr.map(el=>({x:world.x + el[0]*40,y:world.y + el[1]*40})))
+        // console.log(arr.map(el=>({x:world.x + el[0]*40,y:world.y + el[1]*40})))
 
-        this.scene.add(mesh,particles)
-        this.player()
+        this.scene.add(this.mesh,this.particles)
+        material = null
+        shape =null
+        svg  = null
+        loader = null
+
     }
     render(){
 
