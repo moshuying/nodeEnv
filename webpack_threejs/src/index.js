@@ -3,6 +3,7 @@ import {Shine} from "./lib/effectStore/Shine"
 import Start from "./lib/js/three.start"
 import Scan from './lib/effectStore/Scan'
 import Test from './lib/effectStore/Test'
+import Road from './lib/effectStore/Road'
 
 class Web3DScene {
     constructor() {
@@ -29,8 +30,11 @@ class Web3DScene {
         this.register(new Scan(this))
         this.register(new Test(this))
 
+        this.disRegister('Scan')
+        this.disRegister('Test')
         this.disRegisterAll()
         this.register(new Shine(this))
+        this.register(new Road(this))
 
         this.resizeEvent.push(()=>{Start.onWindowResize(this.camera, this.renderer)})
         window.onresize = () => {this.resizeEvent.forEach(el=>el())}
@@ -102,6 +106,7 @@ class Web3DScene {
         this.disposer(this.registerAll[name])
         this.registerAll[name] = null
         delete this.registerAll[name]
+        return !Boolean(this.registerAll[name])
     }
 
     /**

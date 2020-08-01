@@ -10,8 +10,6 @@ let height = window.innerHeight;
 const {Scene,PerspectiveCamera,WebGLRenderer} = THREE
 class Shine{
     /**
-     *
-     * @param threeBox
      * @param {{camera:PerspectiveCamera,scene:Scene,renderer:WebGLRenderer}}threeBox
      */
     constructor(threeBox){
