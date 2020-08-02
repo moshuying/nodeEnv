@@ -62,6 +62,7 @@ export default class Physics{
         param.distance = val
       })
       this.dragControl.addEventListener('hoveron',event => {
+        this.threeBox.addSelect(event.object)
         this.transform.attach(event.object)
 
       })
@@ -89,6 +90,17 @@ export default class Physics{
           }
         }
         this.threeBox.controls.enableRotate = true
+        // for (var vertexIndex = 0; vertexIndex < MovingCube.geometry.vertices.length; vertexIndex++)
+        // {
+        //   var localVertex = MovingCube.geometry.vertices[vertexIndex].clone();
+        //   var globalVertex = localVertex.applyMatrix4( MovingCube.matrix );
+        //   var directionVector = globalVertex.sub( MovingCube.position );
+        //
+        //   var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+        //   var collisionResults = ray.intersectObjects( collidableMeshList );
+        //   if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )
+        //     appendText(" Hit ");
+        // }
       })
     }
     initEvent(){

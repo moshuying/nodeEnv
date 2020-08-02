@@ -36,7 +36,7 @@ class Shine{
         this.effectFXAA.uniforms[ 'resolution' ].value.x = 1 / (width * this.pixelRatio)
         this.effectFXAA.uniforms[ 'resolution' ].value.y = 1 / (height * this.pixelRatio)
         this.composer.addPass(this.effectFXAA)
-        
+
         this.initEvent()
     }
     initEvent(){
@@ -46,8 +46,8 @@ class Shine{
             this.effectFXAA.uniforms[ 'resolution' ].value.y = 1 / (height * this.pixelRatio)
         }
         this.Event.clickEvent = (e,meshs)=>{
-            if(meshs[0]){
-                this.addSelect(meshs[0].object)
+            if(meshs){
+                this.addSelect(meshs[meshs.length-1].object)
             }else{
                 this.resetSelect()
             }
