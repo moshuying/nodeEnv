@@ -15,16 +15,14 @@ class Shine{
     constructor(threeBox){
         this.name = 'Shine'
         this.threeBox = threeBox
-        this.mountArray = ['addSelect','resetSelect']
+        this.mountArray = ['addSelect','resetSelect','initShine']
         this.Event = {
             resizeEvent:[],
             clickEvent:[]
         }
-        this.mouse = new THREE.Vector2();
-        this.raycaster = new THREE.Raycaster();
-        this.init()
+        this.initShine()
     }
-    init(){
+    initShine(){
         this.composer = new EffectComposer(this.threeBox.renderer)
         this.composer.setSize( width, height );
         this.composer.addPass(new RenderPass(this.threeBox.scene,this.threeBox.camera))
@@ -50,23 +48,10 @@ class Shine{
             this.effectFXAA.uniforms[ 'resolution' ].value.x = 1 / (width * this.pixelRatio)
             this.effectFXAA.uniforms[ 'resolution' ].value.y = 1 / (height * this.pixelRatio)
         })
-        this.Event.clickEvent.push((e)=>{
-            this.rayCaster(e,this.threeBox.camera,this.threeBox.scene)
-        })
-    }
-    rayCaster(event,camera,scene){
-        event.preventDefault();
-        this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        this.raycaster.setFromCamera( this.mouse, camera );
-        let intersects = this.raycaster.intersectObjects( scene.children );
-
-        if(intersects.length){
-            const lastMesh = intersects[ intersects.length -1 ].object
-            this.addSelect(lastMesh)
-        }else{
+        this.Event.clickEvent.push((e,lastMesh)=>{
             this.resetSelect()
-        }
+            lastMesh && this.addSelect(lastMesh)
+        })
     }
     addSelect(objs){
         this.outlinePass.selectedObjects = [].concat(objs)

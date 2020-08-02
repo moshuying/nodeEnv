@@ -14,9 +14,11 @@ class ThreeBox {
         this.size = size
         this.threeDomId = threeDomId
         this.center = center || centerPoint
+
+        this.mouse = new THREE.Vector2();
+        this.raycaster = new THREE.Raycaster();
     }
     init(){
-        // this.map = this.map || createMap(center)
         Start.initGUI()
         this.stats = Start.StatsStart(document.body)
         
@@ -34,7 +36,7 @@ class ThreeBox {
         this.camera = Start.camera()
         this.camera.name = 'ThreeBoxCamera'
         Start.addLights(this.scene,this.BaseGroup)
-
+                
         this.registerAll = []
         this.resizeEvent = []
         this.clickEvent = []
@@ -50,10 +52,37 @@ class ThreeBox {
         })
         this.resizeEvent.push(()=>{Start.onWindowResize(this.camera, this.renderer,this.size)})
         window.onresize = () => {this.resizeEvent.forEach(el=>el())}
-
-        this.map.on('click',(e)=> {
-            console.log('clickEvent')
-            this.clickEvent.forEach(el=>el(e))
+        let rawIntersects = (event)=>{
+            event.preventDefault();
+            this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+            this.raycaster.setFromCamera( this.mouse, this.camera );
+            const intersects = this.raycaster.intersectObjects( this.scene.children );
+            if(intersects.length){
+                return intersects[ intersects.length -1 ].object
+            }
+            return false
+        }
+        let mapIntersect = (event)=>{
+            let px = ( event.point.x / this.map.getContainer().clientWidth ) * 2 - 1;
+            let py = - ( event.point.y / this.map.getContainer().clientHeight ) * 2 + 1;
+            if(px) {
+                let p1 = new THREE.Vector3(px, py, 1).unproject(this.camera);
+                let p2 = new THREE.Vector3(px, py, -1).unproject(this.camera);
+                let ray_direction = new THREE.Vector3(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z).normalize();
+                let ray_origin = new THREE.Vector3(p2.x - p2.z / ray_direction.z * ray_direction.x, p2.y - p2.z / ray_direction.z * ray_direction.y, 0);
+                this.raycaster.set(ray_origin, ray_direction);
+                let intersects = this.raycaster.intersectObjects(this.scene.children, true)
+                if(intersects.length){
+                    return intersects[ intersects.length -1 ].object
+                }
+                return false
+            }else {
+                return false
+            }
+        }
+        this.map.on('click',(event)=> {
+            this.clickEvent.forEach(el=>el(event,mapIntersect(event)))
         })
         window.lib = {scene: this.scene, camera: this.camera, renderer: this.renderer, THREE,ThreeBox:this}
     }
@@ -205,7 +234,5 @@ class ThreeBox {
         recursion(sub)
     }
 }
-window.onload = function(){
-    window.ThreeBox = new ThreeBox()
-}
+
 export default ThreeBox

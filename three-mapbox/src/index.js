@@ -5,6 +5,7 @@ import cameraSync from "./lib/cameraSync"
 import {Shine} from "./lib/effectStore/Shine"
 import Start from "./lib/three.start"
 import Scan from './lib/effectStore/Scan'
+import Physics from './lib/effectStore/Physics'
 
 // let center = [104.0634830535829,30.65978568199722];/*成都中心点*/
 // let center = [114.74333177142478, 23.53188466630951];/*河阳中心点*/
@@ -35,12 +36,16 @@ class Web3DScene {
         this.resizeEvent = []
         this.clickEvent = []
 
+        this.mouse = new THREE.Vector2();
+        this.raycaster = new THREE.Raycaster();
+
+        this.initData()
+        this.animation()
         this.register(new Scan(this))
 
         this.disRegisterAll()
         this.register(new Shine(this))
-        this.initData()
-        this.animation()
+        this.register(new Physics(this))
     }
     initData(){
         this.clickEvent.push(e=>{
@@ -51,9 +56,29 @@ class Web3DScene {
         this.resizeEvent.push(()=>{Start.onWindowResize(this.camera, this.renderer)})
         window.onresize = () => {this.resizeEvent.forEach(el=>el())}
 
+        let mapIntersect = (event)=>{
+            let px = ( event.point.x / this.map.getContainer().clientWidth ) * 2 - 1;
+            let py = - ( event.point.y / this.map.getContainer().clientHeight ) * 2 + 1;
+            if(px) {
+                let p1 = new THREE.Vector3(px, py, 1).unproject(this.camera);
+                let p2 = new THREE.Vector3(px, py, -1).unproject(this.camera);
+                let ray_direction = new THREE.Vector3(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z).normalize();
+                let ray_origin = new THREE.Vector3(p2.x - p2.z / ray_direction.z * ray_direction.x, p2.y - p2.z / ray_direction.z * ray_direction.y, 0);
+                this.raycaster.set(ray_origin, ray_direction);
+                let intersects = this.raycaster.intersectObjects(this.scene.children, true)
+                console.log(intersects)
+                if(intersects.length){
+                    return intersects[ intersects.length -1 ].object
+                }
+                return false
+            }else {
+                return false
+            }
+        }
+
         this.map.on('click',(e)=> {
             console.log(e)
-            this.clickEvent.forEach(el=>el(e))
+            this.clickEvent.forEach(el=>el(e,mapIntersect(e)))
         })
         window.lib = {scene: this.scene, camera: this.camera, renderer: this.renderer, THREE,Web3DScene:this}
     }

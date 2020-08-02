@@ -72,35 +72,31 @@ export default class Physics{
         this.threeBox.controls.enableRotate = false
       })
       this.dragControl.addEventListener('dragend',(event)=>{
-        console.log('dragend',event)
-        let collidableMeshList = this.boxGroup.children.map(el=>{if(el.uuid!==event.object.uuid) return el})
-        let origin = event.object
+        console.log('dragend',event.object)
+        let MovingCube = event.object
+        let collidableMeshList = []
+        this.boxGroup.children.forEach(el=>{
+            if(el.uuid!==MovingCube.uuid){
+                collidableMeshList.push(el)
+              }
+        })
+        let vertices = []
+        for(let i=0,l=MovingCube.geometry.attributes.position.array;i<l.length;i+=3){
+          vertices.push(new THREE.Vector3(MovingCube.geometry.attributes.position[i],MovingCube.geometry.attributes.position[i+1],MovingCube.geometry.attributes.position[i+2]))
+        }
         let originPoint = event.object.position.clone()
         let vector = new THREE.Vector3()
-        for(let i = 0; i < originPoint.length;i++){
-          let position = originPoint.geometry.attributes.position
-          vector.fromBufferAttribute(position,i)
-          let globalVertex = vector.applyMatrix4(origin.matrixWorld)
-          let directionVector = globalVertex.sub(origin.position)
-
-          let ray = new THREE.Raycaster(originPoint,directionVector.clone().normalize())
-          let collisionResults = ray.intersectObjects(collidableMeshList)
+        for(let vertexIndex = 0; vertexIndex < vertices.length;vertexIndex++){
+          let localVertex = vertices[vertexIndex].clone()
+          let globalVertex = localVertex.applyMatrix4(MovingCube.matrix)
+          let directionVector = globalVertex.sub(MovingCube.geometry.attributes.position.array)
+          let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+          let collisionResults = ray.intersectObjects( collidableMeshList );
           if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){
             console.log('发生碰撞')
           }
         }
         this.threeBox.controls.enableRotate = true
-        // for (var vertexIndex = 0; vertexIndex < MovingCube.geometry.vertices.length; vertexIndex++)
-        // {
-        //   var localVertex = MovingCube.geometry.vertices[vertexIndex].clone();
-        //   var globalVertex = localVertex.applyMatrix4( MovingCube.matrix );
-        //   var directionVector = globalVertex.sub( MovingCube.position );
-        //
-        //   var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
-        //   var collisionResults = ray.intersectObjects( collidableMeshList );
-        //   if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )
-        //     appendText(" Hit ");
-        // }
       })
     }
     initEvent(){
