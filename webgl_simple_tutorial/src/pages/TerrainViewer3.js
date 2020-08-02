@@ -1,14 +1,14 @@
 import React from 'react';
 import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-import Matrix4,{Vector4,Vector3} from '../lib/cuon-matrix'
+import Matrix4 from '../lib/cuon-matrix'
 export default class HelloPoint1 extends React.Component{
   componentDidMount(){
     main()
   }
   render() {
     return (
-      <div style={{width: '400px', height: '200px'}}>
-        <input type='file' id='demFile3'></input>
+      <div style={{width: '300px', height: '200px',display:'inline-block'}}>
+        <input type='file' multiple="multiple" id='demFile3'></input>
         <canvas id="TerrainViewer3"></canvas>
       </div>
     )

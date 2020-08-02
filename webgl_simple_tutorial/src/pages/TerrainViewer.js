@@ -7,7 +7,7 @@ export default class HelloPoint1 extends React.Component{
   }
   render() {
     return (
-      <div style={{width: '400px', height: '200px'}}>
+      <div style={{width: '300px', height: '200px',display:'inline-block'}}>
         <input type='file' id='demFile'></input>
         <canvas id="TerrainViewer"></canvas>
       </div>

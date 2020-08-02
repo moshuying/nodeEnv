@@ -11,6 +11,10 @@ import TriangleMVPMatrix4 from './pages/TriangleMVPMatrix4'
 import TerrainViewer from './pages/TerrainViewer'
 import TerrainViewer2 from './pages/TerrainViewer2'
 import TerrainViewer3 from './pages/TerrainViewer3'
+import TerrainViewer4 from './pages/TerrainViewer4'
+import TerrainViewer5 from './pages/TerrainViewer5'
+import TerrainViewer6 from './pages/TerrainViewer6'
+import TerrainViewer7 from './pages/TerrainViewer7'
 class App extends React.Component{
   constructor(props){
     super(props);
@@ -30,6 +34,10 @@ class App extends React.Component{
       <TerrainViewer />
       <TerrainViewer2 />
       <TerrainViewer3 />
+      <TerrainViewer4 />
+      <TerrainViewer5 />
+      <TerrainViewer6 />
+      <TerrainViewer7 />
     </div>)
   }
 }
