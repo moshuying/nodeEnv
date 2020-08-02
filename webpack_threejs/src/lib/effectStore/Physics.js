@@ -21,7 +21,7 @@ export default class Physics{
         this.init()
     }
     init(){
-      let geo  =new THREE.ConeBufferGeometry(2, 4, 4)
+      let geo  =new THREE.BoxBufferGeometry(2, 4, 4)
       let mat = new THREE.MeshLambertMaterial({
             color: 0xffffff * Math.random(),
             transparent: true,
@@ -72,7 +72,6 @@ export default class Physics{
         this.threeBox.controls.enableRotate = false
       })
       this.dragControl.addEventListener('dragend',(event)=>{
-        console.log('dragend',event.object)
         let MovingCube = event.object
         let collidableMeshList = []
         this.boxGroup.children.forEach(el=>{
@@ -80,10 +79,8 @@ export default class Physics{
                 collidableMeshList.push(el)
               }
         })
-        let vertices = []
-        for(let i=0,l=MovingCube.geometry.attributes.position.array;i<l.length;i+=3){
-          vertices.push(new THREE.Vector3(MovingCube.geometry.attributes.position[i],MovingCube.geometry.attributes.position[i+1],MovingCube.geometry.attributes.position[i+2]))
-        }
+        let vertices = new THREE.Vector3()
+        vertices.fromBufferAttribute(MovingCube.geometry.getAttribute('position'))
         let originPoint = event.object.position.clone()
         let vector = new THREE.Vector3()
         for(let vertexIndex = 0; vertexIndex < vertices.length;vertexIndex++){
@@ -92,7 +89,7 @@ export default class Physics{
           let directionVector = globalVertex.sub(MovingCube.geometry.attributes.position.array)
           let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
           let collisionResults = ray.intersectObjects( collidableMeshList );
-          if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){
+          if ( collisionResults.length > 0  ){
             console.log('发生碰撞')
           }
         }
