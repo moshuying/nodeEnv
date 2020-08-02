@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
 import Home from "./pages/home";
 import Basemap from "./pages/baseMap";
 import Nav from "./pages/nav";
+
 export default function App() {
   return (
     <Router>

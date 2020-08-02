@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import './styles/index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-
+import Control from './threeBox/Control'
+window.Control =new Control()
 ReactDOM.render(
   <React.StrictMode>
     <App />
