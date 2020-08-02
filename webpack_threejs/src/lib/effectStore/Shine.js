@@ -17,8 +17,6 @@ class Shine{
         this.threeBox = threeBox
         this.mountArray = ['addSelect','resetSelect']
         this.Event = {}
-        this.mouse = new THREE.Vector2();
-        this.raycaster = new THREE.Raycaster();
         this.init()
     }
     init(){
@@ -47,8 +45,12 @@ class Shine{
             this.effectFXAA.uniforms[ 'resolution' ].value.x = 1 / (width * this.pixelRatio)
             this.effectFXAA.uniforms[ 'resolution' ].value.y = 1 / (height * this.pixelRatio)
         }
-        this.Event.clickEvent = (e)=>{
-            this.rayCaster(e,this.threeBox.camera,this.threeBox.scene)
+        this.Event.clickEvent = (e,meshs)=>{
+            if(meshs[0]){
+                this.addSelect(meshs[0].object)
+            }else{
+                this.resetSelect()
+            }
         }
     }
     rayCaster(event,camera,scene){

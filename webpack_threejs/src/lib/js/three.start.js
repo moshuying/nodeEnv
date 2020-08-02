@@ -44,7 +44,7 @@ function scene(group) {
     scene.name = 'indexScene'
     scene.background = new THREE.Color(0xe3e3e3)
     // 添加原点辅助
-    let helper =new THREE.AxesHelper(10)
+    let helper =new THREE.AxesHelper(1)
     helper.name = '原点辅助'
     group.add(helper)
 

@@ -4,6 +4,7 @@ import Start from "./lib/js/three.start"
 import Scan from './lib/effectStore/Scan'
 import Test from './lib/effectStore/Test'
 import Road from './lib/effectStore/Road'
+import Physics from './lib/effectStore/Physics'
 
 class Web3DScene {
     constructor() {
@@ -21,11 +22,14 @@ class Web3DScene {
 
         Start.initSkyByMesh(this.scene, this.renderer, 10000,this.BaseGroup)
         Start.initFloorBoard(this.scene, 1000, 100,this.BaseGroup)
-        Start.controls(this.camera, this.renderer.domElement)
+        this.controls =  Start.controls(this.camera, this.renderer.domElement)
 
         this.registerAll = []
         this.resizeEvent = []
         this.clickEvent = []
+
+        this.mouse = new THREE.Vector2();
+        this.raycaster = new THREE.Raycaster();
 
         this.register(new Scan(this))
         this.register(new Test(this))
@@ -33,19 +37,34 @@ class Web3DScene {
         this.disRegister('Scan')
         this.disRegister('Test')
         this.disRegisterAll()
+        this.register(new Physics(this))
         this.register(new Shine(this))
-        this.register(new Road(this))
+        // this.register(new Road(this))
+        this.initEvent()
+        this.animation()
+    }
+    initEvent(){
+         const rayCaster = (event)=>{
+            event.preventDefault();
+            this.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+            this.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+            this.raycaster.setFromCamera( this.mouse, this.camera );
+            let intersects = this.raycaster.intersectObjects( this.scene.children );
 
+            if(intersects.length){
+                return intersects
+            }else{
+                return false
+            }
+        }
         this.resizeEvent.push(()=>{Start.onWindowResize(this.camera, this.renderer)})
         window.onresize = () => {this.resizeEvent.forEach(el=>el())}
         document.getElementsByTagName('body')[0].addEventListener('click',(e)=>{
-            this.clickEvent.forEach(el=>el(e))
+            this.clickEvent.forEach(el=>el(e,rayCaster(e)))
         })
 
         window.lib = {scene: this.scene, camera: this.camera, renderer: this.renderer, THREE,Web3DScene:this}
-        this.animation()
     }
-
     animation() {
         this.stats.update()
         this.renderer.render(this.scene, this.camera)
