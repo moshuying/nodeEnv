@@ -1,11 +1,16 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-export default class HelloPoint1 extends React.Component{
-  componentDidMount(){
-    main()
+import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+export default class HelloPoint1 extends React.Component {
+  componentDidMount() {
+    main();
   }
   render() {
-    return (<canvas id="HelloPoint1"></canvas>)
+    return (
+      <div className="upload">
+        <canvas id="HelloPoint1"></canvas>
+        <div className="summary" >第一个简单示例</div>
+      </div>
+    );
   }
 }
 // 顶点着色器程序

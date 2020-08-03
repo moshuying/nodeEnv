@@ -1,7 +1,38 @@
-/* canvas{
+.upload ,.upload canvas,.upload input,.upload .summary{
+  margin:1% 1% 1% 1%;
+}
+.upload,canvas{
   width:400px;
-  height: 400px;
-} */
+  height: 300px;
+}
+.upload{
+  position: relative;
+  display: inline-block;
+}
+.upload input{
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: none;
+  background: none;
+  outline: none;
+}
+.upload .summary{
+  height: 3.4rem;
+  overflow: scroll;
+}
+.upload .summary::-webkit-scrollbar{ width:0 !important}
+.upload .summary::before{
+  content: "> ";
+}
+canvas{
+  box-shadow: 0 0 5px black;
+  border-radius: 4px;
+}
+body{
+  background-color:#fff;
+}
+body::-webkit-scrollbar { width: 0 !important }
 .App {
   text-align: center;
 }

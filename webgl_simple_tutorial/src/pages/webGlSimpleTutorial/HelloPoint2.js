@@ -1,11 +1,16 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-export default class HelloPoint1 extends React.Component{
-  componentDidMount(){
-    main()
+import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+export default class HelloPoint1 extends React.Component {
+  componentDidMount() {
+    main();
   }
   render() {
-    return (<canvas id="HelloPoint2"></canvas>)
+    return (
+      <div className="upload">
+        <canvas id="HelloPoint2"></canvas>
+        <div className="summary" >改进了绘制一个点的实例，讲述了WebGL中向着色器(shader)传输数据的问题。</div>
+      </div>
+    );
   }
 }
 // 顶点着色器程序

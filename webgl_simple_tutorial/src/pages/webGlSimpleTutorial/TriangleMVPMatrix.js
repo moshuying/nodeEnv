@@ -1,12 +1,17 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-import Matrix4 from '../lib/cuon-matrix'
-export default class HelloPoint1 extends React.Component{
-  componentDidMount(){
-    main()
+import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+import Matrix4 from '../../lib/cuon-matrix'
+export default class HelloPoint1 extends React.Component {
+  componentDidMount() {
+    main();
   }
   render() {
-    return (<canvas id="TriangleMVPMatrix"></canvas>)
+    return (
+      <div className="upload">
+        <canvas id="TriangleMVPMatrix"></canvas>
+        <div className="summary" >通过使用模型视图投影变换，完成第一个真正三维场景的示例：显示一组由远及近的三角形。</div>
+      </div>
+    );
   }
 }
 // 顶点着色器程序

@@ -1,15 +1,18 @@
 import React from 'react';
-import {getWebGLContext,createProgram} from '../lib/cuon-utils'
-import Matrix4,{Vector3} from '../lib/cuon-matrix'
+import {getWebGLContext,createProgram} from '../../lib/cuon-utils'
+import Matrix4,{Vector3} from '../../lib/cuon-matrix'
+import axios from '../../lib/axios'
+
 export default class HelloPoint1 extends React.Component{
   componentDidMount(){
     main()
   }
   render() {
     return (
-      <div style={{width: '300px', height: '200px',display:'inline-block'}}>
+      <div className="upload">
         <input type='file' id='demFile5'></input>
         <canvas id="TerrainViewer5"></canvas>
+        <div className="summary" >详细论述了WebGL中帧缓冲区技术的实现。</div>
       </div>
     )
   }
@@ -119,7 +122,7 @@ var OFFSCREEN_HEIGHT = 1024;
 var currentAngle = [0.0, 0.0]; // 绕X轴Y轴的旋转角度 ([x-axis, y-axis])
 var curScale = 1.0; //当前的缩放比例
 
-function main() {
+async function main() {
   // 获取 <canvas> 元素
   var canvas = document.getElementById('TerrainViewer5');
 
@@ -191,6 +194,10 @@ function main() {
 
     reader.readAsText(input.files[0]);
   });
+  let res =await axios('get','/Data/DEM.dem',null)
+  var terrain = new Terrain();
+  readDEMFile(res, terrain)
+  DrawDEM(gl, canvas, fbo, frameProgram, drawProgram, terrain);
 }
 
 //从着色器中获取地址，保存到对应的变量中

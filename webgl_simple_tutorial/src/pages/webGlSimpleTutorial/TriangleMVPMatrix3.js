@@ -1,12 +1,17 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-import Matrix4 from '../lib/cuon-matrix'
-export default class HelloPoint1 extends React.Component{
-  componentDidMount(){
-    main()
+import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+import Matrix4 from '../../lib/cuon-matrix'
+export default class HelloPoint1 extends React.Component {
+  componentDidMount() {
+    main();
   }
   render() {
-    return (<canvas id="TriangleMVPMatrix4"></canvas>)
+    return (
+      <div className="upload">
+        <canvas id="TriangleMVPMatrix3"></canvas>
+        <div className="summary" >基于之前教程的知识，实现了一个三维场景的浏览实例：通过鼠标实现场景的旋转和缩放。</div>
+      </div>
+    );
   }
 }
 // 顶点着色器程序
@@ -62,7 +67,7 @@ var curScale = 1.0;   //当前的缩放比例
 
 function main() {
   // 获取 <canvas> 元素
-  var canvas = document.getElementById('TriangleMVPMatrix4');
+  var canvas = document.getElementById('TriangleMVPMatrix3');
 
   // 获取WebGL渲染上下文
   var gl = getWebGLContext(canvas);

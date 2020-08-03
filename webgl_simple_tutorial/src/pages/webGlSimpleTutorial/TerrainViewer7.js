@@ -1,15 +1,19 @@
+/* eslint-disable no-loop-func */
 import React from 'react';
-import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-import Matrix4 from '../lib/cuon-matrix'
+import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+import Matrix4 from '../../lib/cuon-matrix'
+import axios from '../../lib/axios'
+
 export default class HelloPoint1 extends React.Component{
   componentDidMount(){
     main()
   }
   render() {
     return (
-      <div style={{width: '300px', height: '200px',display:'inline-block'}}>
-        <input type='file' multiple="multiple" id='demFile3'></input>
-        <canvas id="TerrainViewer3"></canvas>
+      <div className="upload">
+        <input type='file' id='demFile7' multiple="multiple"></input>
+        <canvas id="TerrainViewer7"></canvas>
+      <div className="summary" >详述了通过WebGL读取、解析并显示glTF格式数据的过程。</div>
       </div>
     )
   }
@@ -17,26 +21,20 @@ export default class HelloPoint1 extends React.Component{
 // 顶点着色器程序
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' + //位置
-  'attribute vec4 a_Color;\n' + //颜色
+  'attribute vec2 a_TexCoord;\n' + //颜色
+  'varying vec2 v_TexCoord;\n' + //纹理坐标
   'uniform mat4 u_MvpMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'varying vec4 v_position;\n' +
   'void main() {\n' +
-  '  v_position = a_Position;\n' +
   '  gl_Position = u_MvpMatrix * a_Position;\n' + // 设置顶点坐标
-  '  v_Color = a_Color;\n' +
+  '  v_TexCoord = a_TexCoord;\n' +  //纹理坐标
   '}\n';
 
 // 片元着色器程序
 var FSHADER_SOURCE =
   'precision mediump float;\n' +
-  'uniform vec2 u_RangeX;\n' + //X方向范围
-  'uniform vec2 u_RangeY;\n' + //Y方向范围
   'uniform sampler2D u_Sampler;\n' +
-  'varying vec4 v_Color;\n' +
-  'varying vec4 v_position;\n' +
+  'varying vec2 v_TexCoord;\n' + //纹理坐标
   'void main() {\n' +
-  '  vec2 v_TexCoord = vec2((v_position.x-u_RangeX[0]) / (u_RangeX[1]-u_RangeX[0]), 1.0-(v_position.y-u_RangeY[0]) / (u_RangeY[1]-u_RangeY[0]));\n' +
   '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
   '}\n';
 
@@ -69,22 +67,18 @@ Cuboid.prototype = {
   }
 }
 
-//定义DEM
-function Terrain() { }
-Terrain.prototype = {
-  constructor: Terrain,
-  setWH: function (col, row) {
-    this.col = col;
-    this.row = row;
-  }
-}
-
 var currentAngle = [0.0, 0.0]; // 绕X轴Y轴的旋转角度 ([x-axis, y-axis])
 var curScale = 1.0; //当前的缩放比例
-var initTexSuccess = false; //纹理图像是否加载完成
 
-function main() {
-  var demFile = document.getElementById('demFile3');
+//获取文件路径的后缀，为小写
+function getFileSuffix(filePath) {
+  var index = filePath.lastIndexOf(".");
+  var suffix = filePath.substr(index + 1);
+  return suffix.toLowerCase();
+}
+
+async function main() {
+  var demFile = document.getElementById('demFile7');
   if (!demFile) {
     console.log("Failed to get demFile element!");
     return;
@@ -102,22 +96,68 @@ function main() {
     var reader = new FileReader();
     reader.onload = function () {
       if (reader.result) {
-        var terrain = new Terrain();
-        if (!readDEMFile(reader.result, terrain)) {
-          console.log("文件格式有误，不能读取该文件！");
-        }
+        var gltfObj = JSON.parse(reader.result);
 
-        //绘制函数
-        onDraw(gl, canvas, terrain);
+        for (var fi = 0; fi < input.files.length; fi++) {
+          //读取bin文件
+          if (gltfObj.buffers[0].uri === input.files[fi].name) {
+            var binReader = new FileReader();
+            binReader.onload = function () {
+              if (binReader.result) {
+                for (var fi = 0; fi < input.files.length; fi++) {
+                  if (gltfObj.images[0].uri === input.files[fi].name) {
+                    //读取纹理图像   
+                    var imgReader = new FileReader();
+
+                    imgReader.onload = function () {
+                      //创建一个image对象
+                      var image = new Image();
+                      if (!image) {
+                        console.log('Failed to create the image object');
+                        return false;
+                      }
+
+                      //图像加载的响应函数 
+                      image.onload = function () {
+                        //绘制函数
+                        onDraw(gl, canvas, gltfObj, binReader.result, image);
+                      };
+
+                      //浏览器开始加载图像
+                      image.src = imgReader.result;
+                    }
+
+                    imgReader.readAsDataURL(input.files[fi]); //按照base64格式读取
+                    break;
+                  }
+                }
+              }
+            }
+            binReader.readAsArrayBuffer(input.files[fi]);    //按照ArrayBuffer格式读取
+            break;
+          }
+        }
       }
     }
 
     var input = event.target;
-    reader.readAsText(input.files[0]);
+
+    var flag = false;
+    for (var fi = 0; fi < input.files.length; fi++) {
+      if (getFileSuffix(input.files[fi].name) === "gltf") {
+        flag = true;
+        reader.readAsText(input.files[fi]);      //按照字符串格式读取
+        break;
+      }
+    }
+
+    if (!flag) {
+      alert("没有找到gltf");
+    }
   });
 
   // 获取 <canvas> 元素
-  var canvas = document.getElementById('TerrainViewer3');
+  var canvas = document.getElementById('TerrainViewer7');
 
   // 获取WebGL渲染上下文
   var gl = getWebGLContext(canvas);
@@ -140,22 +180,42 @@ function main() {
 
   //清空颜色和深度缓冲区
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  
+  let gltf = await axios("get", "/Data/new.gltf");
+  let gltfObj = JSON.parse(gltf);
+
+  let binBuffer = await new Promise(async (resolve) => {
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(await axios("get", "/Data/new.bin", null, "blob"));
+    reader.onload = () => resolve(reader.result);
+  });
+
+  let imgDom = await new Promise(async (resolve) => {
+    let jpgFileBae64 = await new Promise(async (resolve) => {
+      let reader = new FileReader();
+      reader.readAsDataURL(await axios("get", "/Data/tex.jpg", null, "blob"));
+      reader.onload = (res) => resolve(res.target.result);
+    });
+    let img = new Image();
+    img.src = jpgFileBae64;
+    img.onload = () => resolve(img);
+  });
+  
+  onDraw(gl, canvas, gltfObj, binBuffer, imgDom);
 }
 
 //绘制函数
-function onDraw(gl, canvas, terrain) {
-  // 设置顶点位置
-  //var cuboid = new Cuboid(399589.072, 400469.072, 3995118.062, 3997558.062, 732, 1268); 
-  var n = initVertexBuffers(gl, terrain);
+function onDraw(gl, canvas, gltfObj, binBuf, image) {
+  // 设置顶点位置 
+  var n = initVertexBuffers(gl, gltfObj, binBuf);
   if (n < 0) {
     console.log('Failed to set the positions of the vertices');
     return;
   }
 
   //设置纹理
-  if (!initTextures(gl, terrain)) {
-    console.log('Failed to intialize the texture.');
-    return;
+  if (!loadTexture(gl, image)) {
+    console.log('Failed to set the Texture!');
   }
 
   //注册鼠标事件
@@ -163,17 +223,14 @@ function onDraw(gl, canvas, terrain) {
 
   //绘制函数
   var tick = function () {
-    if (initTexSuccess) {
-      //设置MVP矩阵
-      setMVPMatrix(gl, canvas, terrain.cuboid);
+    //设置MVP矩阵
+    setMVPMatrix(gl, canvas, gltfObj.cuboid);
 
-      //清空颜色和深度缓冲区
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    //清空颜色和深度缓冲区
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-      //绘制矩形体
-      gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
-      //gl.drawArrays(gl.Points, 0, n);
-    }
+    //绘制矩形体
+    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_SHORT, 0);
 
     //请求浏览器调用tick
     requestAnimationFrame(tick);
@@ -181,36 +238,6 @@ function onDraw(gl, canvas, terrain) {
 
   //开始绘制
   tick();
-}
-
-function initTextures(gl, terrain) {
-  // 传递X方向和Y方向上的范围到着色器
-  var u_RangeX = gl.getUniformLocation(gl.program, 'u_RangeX');
-  var u_RangeY = gl.getUniformLocation(gl.program, 'u_RangeY');
-  if (!u_RangeX || !u_RangeY) {
-    console.log('Failed to get the storage location of u_RangeX or u_RangeY');
-    return;
-  }
-  gl.uniform2f(u_RangeX, terrain.cuboid.minX, terrain.cuboid.maxX);
-  gl.uniform2f(u_RangeY, terrain.cuboid.minY, terrain.cuboid.maxY);
-
-  //创建一个image对象
-  var image = new Image();
-  if (!image) {
-    console.log('Failed to create the image object');
-    return false;
-  }
-  //图像加载的响应函数 
-  image.onload = function () {
-    if (loadTexture(gl, image)) {
-      initTexSuccess = true;
-    }
-  };
-
-  //浏览器开始加载图像
-  image.src = 'tex.jpg';
-
-  return true;
 }
 
 function loadTexture(gl, image) {
@@ -245,71 +272,6 @@ function loadTexture(gl, image) {
 
   return true;
 }
-
-//读取DEM函数
-function readDEMFile(result, terrain) {
-  var stringlines = result.split("\n");
-  if (!stringlines || stringlines.length <= 0) {
-    return false;
-  }
-
-  //读取头信息
-  var subline = stringlines[0].split("\t");
-  if (subline.length !== 6) {
-    return false;
-  }
-  var col = parseInt(subline[4]); //DEM宽
-  var row = parseInt(subline[5]); //DEM高
-  var verticeNum = col * row;
-  if (verticeNum + 1 > stringlines.length) {
-    return false;
-  }
-  terrain.setWH(col, row);
-
-  //读取点信息
-  var ci = 0;
-  terrain.verticesColors = new Float32Array(verticeNum * 6);
-  for (var i = 1; i < stringlines.length; i++) {
-    if (!stringlines[i]) {
-      continue;
-    }
-
-    let subline = stringlines[i].split(',');
-    if (subline.length !== 9) {
-      continue;
-    }
-
-    for (var j = 0; j < 6; j++) {
-      terrain.verticesColors[ci] = parseFloat(subline[j]);
-      ci++;
-    }
-  }
-
-  if (ci !== verticeNum * 6) {
-    return false;
-  }
-
-  //包围盒
-  var minX = terrain.verticesColors[0];
-  var maxX = terrain.verticesColors[0];
-  var minY = terrain.verticesColors[1];
-  var maxY = terrain.verticesColors[1];
-  var minZ = terrain.verticesColors[2];
-  var maxZ = terrain.verticesColors[2];
-  for (let i = 0; i < verticeNum; i++) {
-    minX = Math.min(minX, terrain.verticesColors[i * 6]);
-    maxX = Math.max(maxX, terrain.verticesColors[i * 6]);
-    minY = Math.min(minY, terrain.verticesColors[i * 6 + 1]);
-    maxY = Math.max(maxY, terrain.verticesColors[i * 6 + 1]);
-    minZ = Math.min(minZ, terrain.verticesColors[i * 6 + 2]);
-    maxZ = Math.max(maxZ, terrain.verticesColors[i * 6 + 2]);
-  }
-
-  terrain.cuboid = new Cuboid(minX, maxX, minY, maxY, minZ, maxZ);
-
-  return true;
-}
-
 
 //注册鼠标事件
 function initEventHandlers(canvas) {
@@ -403,33 +365,17 @@ function setMVPMatrix(gl, canvas, cuboid) {
 }
 
 //
-function initVertexBuffers(gl, terrain) {
-  //DEM的一个网格是由两个三角形组成的
-  //      0------1            1
-  //      |                   |
-  //      |                   |
-  //      col       col------col+1    
-  var col = terrain.col;
-  var row = terrain.row;
-
-  var indices = new Uint16Array((row - 1) * (col - 1) * 6);
-  var ci = 0;
-  for (var yi = 0; yi < row - 1; yi++) {
-    //for (var yi = 0; yi < 10; yi++) {
-    for (var xi = 0; xi < col - 1; xi++) {
-      indices[ci * 6] = yi * col + xi;
-      indices[ci * 6 + 1] = (yi + 1) * col + xi;
-      indices[ci * 6 + 2] = yi * col + xi + 1;
-      indices[ci * 6 + 3] = (yi + 1) * col + xi;
-      indices[ci * 6 + 4] = (yi + 1) * col + xi + 1;
-      indices[ci * 6 + 5] = yi * col + xi + 1;
-      ci++;
-    }
+function initVertexBuffers(gl, gltfObj, binBuf) {
+  //获取顶点数据位置信息  
+  var positionAccessorId = gltfObj.meshes[0].primitives[0].attributes.POSITION;
+  if (gltfObj.accessors[positionAccessorId].componentType !== 5126) {
+    return 0;
   }
 
-  //
-  var verticesColors = terrain.verticesColors;
-  var FSIZE = verticesColors.BYTES_PER_ELEMENT; //数组中每个元素的字节数
+  var positionBufferViewId = gltfObj.accessors[positionAccessorId].bufferView;
+  var verticesColors = new Float32Array(binBuf, gltfObj.bufferViews[positionBufferViewId].byteOffset, gltfObj.bufferViews[positionBufferViewId].byteLength / Float32Array.BYTES_PER_ELEMENT);
+
+  gltfObj.cuboid = new Cuboid(gltfObj.accessors[positionAccessorId].min[0], gltfObj.accessors[positionAccessorId].max[0], gltfObj.accessors[positionAccessorId].min[1], gltfObj.accessors[positionAccessorId].max[1], gltfObj.accessors[positionAccessorId].min[2], gltfObj.accessors[positionAccessorId].max[2]);
 
   // 创建缓冲区对象
   var vertexColorBuffer = gl.createBuffer();
@@ -450,22 +396,35 @@ function initVertexBuffers(gl, terrain) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
-  // 将缓冲区对象分配给a_Position变量
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
+
+  // 将缓冲区对象分配给a_Position变量  
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, gltfObj.bufferViews[positionBufferViewId].byteStride, gltfObj.accessors[positionAccessorId].byteOffset);
 
   // 连接a_Position变量与分配给它的缓冲区对象
   gl.enableVertexAttribArray(a_Position);
 
-  //获取着色器中attribute变量a_Color的地址 
-  var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
-  if (a_Color < 0) {
-    console.log('Failed to get the storage location of a_Color');
+  //获取顶点数据纹理信息  
+  var txtCoordAccessorId = gltfObj.meshes[0].primitives[0].attributes.TEXCOORD_0;
+  if (gltfObj.accessors[txtCoordAccessorId].componentType !== 5126) {
+    return 0;
+  }
+  var txtCoordBufferViewId = gltfObj.accessors[txtCoordAccessorId].bufferView;
+
+  //获取着色器中attribute变量a_TxtCoord的地址 
+  var a_TexCoord = gl.getAttribLocation(gl.program, 'a_TexCoord');
+  if (a_TexCoord < 0) {
+    console.log('Failed to get the storage location of a_TexCoord');
     return -1;
   }
   // 将缓冲区对象分配给a_Color变量
-  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+  gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, gltfObj.bufferViews[txtCoordBufferViewId].byteStride, gltfObj.accessors[txtCoordAccessorId].byteOffset);
   // 连接a_Color变量与分配给它的缓冲区对象
-  gl.enableVertexAttribArray(a_Color);
+  gl.enableVertexAttribArray(a_TexCoord);
+
+  //获取顶点数据索引信息
+  var indicesAccessorId = gltfObj.meshes[0].primitives[0].indices;
+  var indicesBufferViewId = gltfObj.accessors[indicesAccessorId].bufferView;
+  var indices = new Uint16Array(binBuf, gltfObj.bufferViews[indicesBufferViewId].byteOffset, gltfObj.bufferViews[indicesBufferViewId].byteLength / Uint16Array.BYTES_PER_ELEMENT);
 
   // 将顶点索引写入到缓冲区对象
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);

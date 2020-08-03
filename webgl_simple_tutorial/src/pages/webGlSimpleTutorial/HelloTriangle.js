@@ -1,34 +1,36 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../lib/cuon-utils'
-export default class HelloPoint1 extends React.Component{
-  componentDidMount(){
-    main()
+import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+export default class HelloPoint1 extends React.Component {
+  componentDidMount() {
+    main();
   }
   render() {
-    return (<canvas id="HelloTriangle2"></canvas>)
+    return (
+      <div className="upload">
+        <canvas id="HelloTriangle"></canvas>
+        <div className="summary" >通过一个绘制三角形的具体实例，详解了WebGL中缓冲区对象(buffer object)的使用。</div>
+      </div>
+    );
   }
 }
 // 顶点着色器程序
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' + // attribute variable
-  'attribute vec4 a_Color;\n' +
-  'varying vec4 v_Color;\n' +
   'void main() {\n' +
   '  gl_Position = a_Position;\n' + // Set the vertex coordinates of the point
-  '  v_Color = a_Color;\n' +
   '}\n';
 
 // 片元着色器程序
-var FSHADER_SOURCE = 
+var FSHADER_SOURCE =
   'precision mediump float;\n' +
-  'varying vec4 v_Color;\n' +
+  'uniform vec4 u_FragColor;\n' +  // uniform変数
   'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
+  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
   '}\n';
 
 function main() {
   // 获取 <canvas> 元素
-  var canvas = document.getElementById('HelloTriangle2');
+  var canvas = document.getElementById('HelloTriangle');
 
   // 获取WebGL渲染上下文
   var gl = getWebGLContext(canvas);
@@ -48,7 +50,7 @@ function main() {
   if (n < 0) {
     console.log('Failed to set the positions of the vertices');
     return;
-  }
+  } 
 
   // 指定清空<canvas>的颜色
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -57,20 +59,14 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // 绘制三角形
-  gl.drawArrays(gl.TRIANGLES, 0, n);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
 function initVertexBuffers(gl) {
-  // 顶点坐标和颜色
-  var verticesColors = new Float32Array([    
-     0.0,  0.5,  1.0,  0.0,  0.0, 
-    -0.5, -0.5,  0.0,  1.0,  0.0, 
-     0.5, -0.5,  0.0,  0.0,  1.0, 
+  var vertices = new Float32Array([
+    0, 0.5,   -0.5, -0.5,   0.5, -0.5
   ]);
-
-  //
   var n = 3; // 点的个数
-  var FSIZE = verticesColors.BYTES_PER_ELEMENT;   //数组中每个元素的字节数
 
   // 创建缓冲区对象
   var vertexBuffer = gl.createBuffer();
@@ -82,33 +78,18 @@ function initVertexBuffers(gl) {
   // 将缓冲区对象绑定到目标
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   // 向缓冲区对象写入数据
-  gl.bufferData(gl.ARRAY_BUFFER, verticesColors, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-  //获取着色器中attribute变量a_Position的地址 
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
   // 将缓冲区对象分配给a_Position变量
-  gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 5*FSIZE, 0);
+  gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
 
   // 连接a_Position变量与分配给它的缓冲区对象
   gl.enableVertexAttribArray(a_Position);
-
-  //获取着色器中attribute变量a_Color的地址 
-  var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
-  if(a_Color < 0) {
-    console.log('Failed to get the storage location of a_Color');
-    return -1;
-  }
-  // 将缓冲区对象分配给a_Color变量
-  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 5, FSIZE * 2);
-  // 连接a_Color变量与分配给它的缓冲区对象
-  gl.enableVertexAttribArray(a_Color);  
-
-  // 解除绑定
-  gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   return n;
 }
