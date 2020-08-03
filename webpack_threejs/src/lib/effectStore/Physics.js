@@ -21,7 +21,7 @@ export default class Physics{
         this.init()
     }
     init(){
-      let geo  =new THREE.BoxBufferGeometry(2, 4, 4)
+      let geo  =new THREE.BoxBufferGeometry(5, 6, 7)
       let mat = new THREE.MeshLambertMaterial({
             color: 0xffffff * Math.random(),
             transparent: true,
@@ -79,10 +79,11 @@ export default class Physics{
                 collidableMeshList.push(el)
               }
         })
-        let vertices = new THREE.Vector3()
-        vertices.fromBufferAttribute(MovingCube.geometry.getAttribute('position'))
+        let vertices = []
+        for(let i=0,l=MovingCube.geometry.attributes.position.array.length;i<l;i+=3){
+          vertices.push(new THREE.Vector3(MovingCube.geometry.attributes.position.array[i],MovingCube.geometry.attributes.position.array[i+1],MovingCube.geometry.attributes.position.array[i+2]))
+        }
         let originPoint = event.object.position.clone()
-        let vector = new THREE.Vector3()
         for(let vertexIndex = 0; vertexIndex < vertices.length;vertexIndex++){
           let localVertex = vertices[vertexIndex].clone()
           let globalVertex = localVertex.applyMatrix4(MovingCube.matrix)
