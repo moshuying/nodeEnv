@@ -1,6 +1,6 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '@/lib/cuon-utils'
 import Matrix4 from '@/lib/cuon-matrix'
+import {getWebGLContext,initShaders} from '@/lib/cuon-utils'
 export default class HelloPoint1 extends React.Component {
   componentDidMount() {
     main();
@@ -8,8 +8,8 @@ export default class HelloPoint1 extends React.Component {
   render() {
     return (
       <div className="upload">
-        <canvas id="TriangleMVPMatrix2"></canvas>
-        <div className="summary" >通过一个绘制矩形包围盒的实例，进一步理解了模型视图投影变换。</div>
+        <canvas id="TriangleMVPMatrix3"></canvas>
+        <div className="summary" >基于之前教程的知识，实现了一个三维场景的浏览实例：通过鼠标实现场景的旋转和缩放。</div>
       </div>
     );
   }
@@ -62,12 +62,12 @@ Cuboid.prototype = {
   }
 }
 
-var currentAngle = [35.0, 30.0]; // 绕X轴Y轴的旋转角度 ([x-axis, y-axis])
+var currentAngle = [0.0, 0.0]; // 绕X轴Y轴的旋转角度 ([x-axis, y-axis])
 var curScale = 1.0;   //当前的缩放比例
 
 function main() {
   // 获取 <canvas> 元素
-  var canvas = document.getElementById('TriangleMVPMatrix2');
+  var canvas = document.getElementById('TriangleMVPMatrix3');
 
   // 获取WebGL渲染上下文
   var gl = getWebGLContext(canvas);
@@ -89,6 +89,9 @@ function main() {
     console.log('Failed to set the positions of the vertices');
     return;
   }
+
+  //注册鼠标事件
+  initEventHandlers(canvas);
 
   // 指定清空<canvas>的颜色
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -116,6 +119,59 @@ function main() {
 
   // 绘制矩形体
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+}
+
+//注册鼠标事件
+function initEventHandlers(canvas) {
+  var dragging = false;         // Dragging or not
+  var lastX = -1, lastY = -1;   // Last position of the mouse
+
+  //鼠标按下
+  canvas.onmousedown = function (ev) {
+    var x = ev.clientX;
+    var y = ev.clientY;
+    // Start dragging if a moue is in <canvas>
+    var rect = ev.target.getBoundingClientRect();
+    if (rect.left <= x && x < rect.right && rect.top <= y && y < rect.bottom) {
+      lastX = x;
+      lastY = y;
+      dragging = true;
+    }
+  };
+
+  //鼠标离开时
+  canvas.onmouseleave = function (ev) {
+    dragging = false;
+  };
+
+  //鼠标释放
+  canvas.onmouseup = function (ev) {
+    dragging = false;
+  };
+
+  //鼠标移动
+  canvas.onmousemove = function (ev) {
+    var x = ev.clientX;
+    var y = ev.clientY;
+    if (dragging) {
+      var factor = 100 / canvas.height; // The rotation ratio
+      var dx = factor * (x - lastX);
+      var dy = factor * (y - lastY);
+      currentAngle[0] = currentAngle[0] + dy;
+      currentAngle[1] = currentAngle[1] + dx;
+    }
+    lastX = x
+    lastY = y
+  };
+
+  //鼠标缩放
+  canvas.onmousewheel = function (event) {    
+    if (event.wheelDelta > 0) {
+      curScale = curScale * 1.1;
+    } else {
+      curScale = curScale * 0.9;
+    }
+  };
 }
 
 //设置MVP矩阵

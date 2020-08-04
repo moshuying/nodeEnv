@@ -1,4 +1,4 @@
-.upload ,.upload canvas,.upload input,.upload .summary{
+.upload ,.upload input,.upload .summary{
   margin:1% 1% 1% 1%;
 }
 .upload,canvas{
@@ -25,10 +25,10 @@
 .upload .summary::before{
   content: "> ";
 }
-canvas{
+/* canvas{
   box-shadow: 0 0 5px black;
   border-radius: 4px;
-}
+} */
 body{
   background-color:#fff;
 }

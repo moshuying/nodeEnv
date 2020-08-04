@@ -1,7 +1,7 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
-import Matrix4,{Vector3} from '../../lib/cuon-matrix'
-import axios from '../../lib/axios'
+import {getWebGLContext,initShaders} from '@/lib/cuon-utils'
+import Matrix4,{Vector3} from '@/lib/cuon-matrix'
+import axios from '@/lib/axios'
 
 export default class HelloPoint1 extends React.Component{
   componentDidMount(){

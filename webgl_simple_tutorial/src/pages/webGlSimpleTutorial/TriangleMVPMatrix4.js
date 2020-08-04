@@ -1,6 +1,6 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
-import Matrix4 from '../../lib/cuon-matrix'
+import {getWebGLContext,initShaders} from '@/lib/cuon-utils'
+import Matrix4 from '@/lib/cuon-matrix'
 export default class HelloPoint1 extends React.Component{
   componentDidMount(){
     main()

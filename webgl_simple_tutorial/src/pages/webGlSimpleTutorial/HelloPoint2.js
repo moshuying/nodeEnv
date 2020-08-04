@@ -1,5 +1,5 @@
 import React from 'react';
-import {getWebGLContext,initShaders} from '../../lib/cuon-utils'
+import {getWebGLContext,initShaders} from '@/lib/cuon-utils'
 export default class HelloPoint1 extends React.Component {
   componentDidMount() {
     main();
