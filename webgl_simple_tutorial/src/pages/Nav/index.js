@@ -2,7 +2,7 @@ import React from "react";
 import { Layout, Menu, Breadcrumb } from "antd";
 
 import WebGlSimpleTutorial from "./webGlSimpleTutorial"
-import theBookOfShaders from "./theBookOfShaders"
+// import theBookOfShaders from "./theBookOfShaders"
 import "./index.css";
 const { Header, Content, Footer } = Layout;
 class Nav extends React.Component {
@@ -20,7 +20,6 @@ class Nav extends React.Component {
       // case 1:this.setState({dom:theBookOfShaders}) ;break;
       // default: break ;
     }
-    console.log(1)
     // this.setState({path:'webgl 简单示例'})
   }
   render() {
@@ -28,7 +27,7 @@ class Nav extends React.Component {
       <Layout className="layout">
         <Header>
           <div className="logo" />
-          <Menu mode="horizontal" defaultSelectedKeys={["0"]}>
+          <Menu defaultSelectedKeys={["0"]}>
             <Menu.Item key="0" onClick={this.change(0)}>webgl 简单示例</Menu.Item>
             <Menu.Item key="1" onClick={this.change(1)}>The Book of Shaders</Menu.Item>
           </Menu>

@@ -64,13 +64,14 @@ Cuboid.prototype = {
 
 var currentAngle = [0.0, 0.0]; // 绕X轴Y轴的旋转角度 ([x-axis, y-axis])
 var curScale = 1.0;   //当前的缩放比例
-
+var dragging = false;         // Dragging or not
+let cuboid,canvas,gl,vertex
 function main() {
   // 获取 <canvas> 元素
-  var canvas = document.getElementById('TriangleMVPMatrix3');
+  canvas = document.getElementById('TriangleMVPMatrix3');
 
   // 获取WebGL渲染上下文
-  var gl = getWebGLContext(canvas);
+  gl = getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -83,9 +84,9 @@ function main() {
   }
 
   // 设置顶点位置
-  var cuboid = new Cuboid(399589.072, 400469.072, 3995118.062, 3997558.062, 732, 1268);
-  var n = initVertexBuffers(gl, cuboid);
-  if (n < 0) {
+  cuboid = new Cuboid(399589.072, 400469.072, 3995118.062, 3997558.062, 732, 1268);
+  vertex = initVertexBuffers(gl, cuboid);
+  if (vertex < 0) {
     console.log('Failed to set the positions of the vertices');
     return;
   }
@@ -99,31 +100,28 @@ function main() {
   // 开启深度测试
   gl.enable(gl.DEPTH_TEST);
 
-  //绘制函数
-  var tick = function () {
-    //设置MVP矩阵
-    setMVPMatrix(gl, canvas, cuboid);
-
-    //清空颜色和深度缓冲区
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    //绘制矩形体
-    gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
-
-    //请求浏览器调用tick
-    requestAnimationFrame(tick);  
-  };
-
   //开始绘制
   tick();
 
   // 绘制矩形体
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+  gl.drawElements(gl.TRIANGLES, vertex, gl.UNSIGNED_BYTE, 0);
 }
+//绘制函数
+function tick () {
+  //设置MVP矩阵
+  setMVPMatrix(gl, canvas, cuboid);
 
+  //清空颜色和深度缓冲区
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  //绘制矩形体
+  gl.drawElements(gl.TRIANGLES, vertex, gl.UNSIGNED_BYTE, 0);
+
+  //请求浏览器调用tick
+  // requestAnimationFrame(tick);  
+};
 //注册鼠标事件
 function initEventHandlers(canvas) {
-  var dragging = false;         // Dragging or not
   var lastX = -1, lastY = -1;   // Last position of the mouse
 
   //鼠标按下
@@ -162,6 +160,7 @@ function initEventHandlers(canvas) {
     }
     lastX = x
     lastY = y
+    dragging && tick ()
   };
 
   //鼠标缩放
@@ -171,6 +170,7 @@ function initEventHandlers(canvas) {
     } else {
       curScale = curScale * 0.9;
     }
+    tick ()
   };
 }
 

@@ -108,7 +108,7 @@ function main() {
     gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 
     //请求浏览器调用tick
-    requestAnimationFrame(tick);  
+    // requestAnimationFrame(tick);  
   };
 
   //开始绘制

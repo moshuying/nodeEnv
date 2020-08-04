@@ -54,7 +54,7 @@ function main() {
   }
 
   // 将顶点位置传输给attribute变量
-  gl.vertexAttrib3f(a_Position, 0.5, 0.5, 0.0);
+  gl.vertexAttrib3f(a_Position, 0.5, 0.5, 0.1);
 
   //获取u_FragColor变量的存储地址
   var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
