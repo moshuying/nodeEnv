@@ -72,22 +72,23 @@ export default class Physics{
         this.threeBox.controls.enableRotate = false
       })
       this.dragControl.addEventListener('dragend',(event)=>{
-        let MovingCube = event.object
+        let eventCube = event.object
         let collidableMeshList = []
         this.boxGroup.children.forEach(el=>{
-            if(el.uuid!==MovingCube.uuid){
-                collidableMeshList.push(el)
+            if(el.uuid!==eventCube.uuid){
+                collidableMeshList.push(new THREE.Mesh(
+                  new THREE.Geometry().fromBufferGeometry(el.geometry),
+                  new THREE.MeshBasicMaterial( { color: 0x000000, wireframe:true } )
+                ))
               }
         })
-        let vertices = []
-        for(let i=0,l=MovingCube.geometry.attributes.position.array.length;i<l;i+=3){
-          vertices.push(new THREE.Vector3(MovingCube.geometry.attributes.position.array[i],MovingCube.geometry.attributes.position.array[i+1],MovingCube.geometry.attributes.position.array[i+2]))
-        }
+        let MovingCube = new THREE.Geometry().fromBufferGeometry(eventCube.geometry)
+        let vertices = MovingCube.vertices
         let originPoint = event.object.position.clone()
         for(let vertexIndex = 0; vertexIndex < vertices.length;vertexIndex++){
           let localVertex = vertices[vertexIndex].clone()
-          let globalVertex = localVertex.applyMatrix4(MovingCube.matrix)
-          let directionVector = globalVertex.sub(MovingCube.geometry.attributes.position.array)
+          let globalVertex = localVertex.applyMatrix4(eventCube.matrix)
+          let directionVector = globalVertex.sub(eventCube.position)
           let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
           let collisionResults = ray.intersectObjects( collidableMeshList );
           if ( collisionResults.length > 0  ){
