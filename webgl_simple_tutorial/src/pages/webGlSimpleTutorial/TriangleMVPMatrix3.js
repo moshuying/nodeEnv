@@ -30,7 +30,7 @@ var FSHADER_SOURCE =
   'precision mediump float;\n' +
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
+  '  gl_FragColor = v_Color+0.1;\n' +
   '}\n';
 
 //定义一个矩形体：混合构造函数原型模式
@@ -95,7 +95,7 @@ function main() {
   initEventHandlers(canvas);
 
   // 指定清空<canvas>的颜色
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.1, 0.1, 0.1, 0.5);
 
   // 开启深度测试
   gl.enable(gl.DEPTH_TEST);
