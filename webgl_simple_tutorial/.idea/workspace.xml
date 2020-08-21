@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="34fb90ac-7784-41c2-b25e-1441a384ea72" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/pages/theBookOfShaders/Random2DChaos/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/cuon-matrix.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/cuon-matrix.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/cuon-utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/cuon-utils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/theBookOfShaders/TEMPLETE.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/theBookOfShaders/random2D.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/theBookOfShaders/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/theBookOfShaders/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/webGlSimpleTutorial/HelloPoint1.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/webGlSimpleTutorial/HelloPoint1.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ElmWorkspace">
+    <elmProjects />
+    <settings elmCompilerPath="" elmFormatPath="" elmTestPath="" isElmFormatOnSaveEnabled="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="GLSL Shader" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="JsbtTreeLayoutManager">
+    <layout place="tools.popupnpm">
+      <scroll-view-position x="0" y="0" />
+      <selected-paths>
+        <path>
+          <id value="$PROJECT_DIR$/package.json" />
+          <id value="start" />
+        </path>
+      </selected-paths>
+    </layout>
+  </component>
+  <component name="ProjectId" id="1frFKx1tVBJedWCm0Lg4mVs2mNF" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/webstorm.config.js" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+    <property name="ts.external.directory.path" value="D:\localTemp\jetToolBox\apps\WebStorm\ch-0\202.6397.88\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\msy\mygit\nodeEnv\webgl_simple_tutorial\src\pages\theBookOfShaders\Random2DChaos" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="start" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="34fb90ac-7784-41c2-b25e-1441a384ea72" name="Default Changelist" comment="" />
+      <created>1596968245872</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596968245872</updated>
+      <workItem from="1596968247049" duration="722000" />
+      <workItem from="1596969019325" duration="353000" />
+      <workItem from="1597504124532" duration="2858000" />
+      <workItem from="1597549843628" duration="8420000" />
+      <workItem from="1597562434411" duration="10733000" />
+      <workItem from="1597673988554" duration="161000" />
+      <workItem from="1597674741098" duration="634000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="223" y="90" width="1089" height="709" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596968386454">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="223" y="90" width="1089" height="709" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.864@0.0.1536.864" timestamp="1596968386454" />
+    <state x="496" y="240" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1597562306138">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="496" y="240" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1536.864@0.0.1536.864" timestamp="1597562306138" />
+    <state x="516" y="299" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1597584646436">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="516" y="299" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1536.864@0.0.1536.864" timestamp="1597584646436" />
+    <state x="547" y="187" key="FileChooserDialogImpl" timestamp="1596969123401">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="547" y="187" key="FileChooserDialogImpl/0.0.1536.864@0.0.1536.864" timestamp="1596969123401" />
+    <state width="1493" height="215" key="GridCell.Tab.0.bottom" timestamp="1597586619845">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="215" key="GridCell.Tab.0.bottom/0.0.1536.864@0.0.1536.864" timestamp="1597586619845" />
+    <state width="1493" height="215" key="GridCell.Tab.0.center" timestamp="1597586619845">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="215" key="GridCell.Tab.0.center/0.0.1536.864@0.0.1536.864" timestamp="1597586619845" />
+    <state width="1493" height="215" key="GridCell.Tab.0.left" timestamp="1597586619845">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="215" key="GridCell.Tab.0.left/0.0.1536.864@0.0.1536.864" timestamp="1597586619845" />
+    <state width="1493" height="215" key="GridCell.Tab.0.right" timestamp="1597586619845">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state width="1493" height="215" key="GridCell.Tab.0.right/0.0.1536.864@0.0.1536.864" timestamp="1597586619845" />
+    <state x="270" y="76" key="SettingsEditor" timestamp="1597562577843">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="270" y="76" key="SettingsEditor/0.0.1536.864@0.0.1536.864" timestamp="1597562577843" />
+    <state x="563" y="131" key="VCS.ChangeListViewerDialog" timestamp="1597504540810">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="563" y="131" key="VCS.ChangeListViewerDialog/0.0.1536.864@0.0.1536.864" timestamp="1597504540810" />
+    <state x="375" y="113" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1596969278997">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="375" y="113" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1536.864@0.0.1536.864" timestamp="1596969278997" />
+    <state x="575" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1597543162403">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="575" y="348" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.864@0.0.1536.864" timestamp="1597543162403" />
+    <state x="470" y="182" width="596" height="500" key="find.popup" timestamp="1597557867820">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="470" y="182" width="596" height="500" key="find.popup/0.0.1536.864@0.0.1536.864" timestamp="1597557867820" />
+    <state x="635" y="298" width="251" height="278" key="jetbrains.javascript.buildTools.run-task-popup" timestamp="1597553405129">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="635" y="298" width="251" height="278" key="jetbrains.javascript.buildTools.run-task-popup/0.0.1536.864@0.0.1536.864" timestamp="1597553405129" />
+    <state x="431" y="181" width="672" height="678" key="search.everywhere.popup" timestamp="1597504868079">
+      <screen x="0" y="0" width="1536" height="864" />
+    </state>
+    <state x="431" y="181" width="672" height="678" key="search.everywhere.popup/0.0.1536.864@0.0.1536.864" timestamp="1597504868079" />
+  </component>
+</project>
