@@ -4,6 +4,8 @@ import Shine from "./effectStore/Shine"
 import Physics from "./effectStore/Physics"
 import FixBug from "./effectStore/FixBug"
 
+import Shader from "./effectStore/Shader"
+
 class THREE extends ThreeBox{
   constructor(map,size,threeDomId,center,react){
     super(map,size,threeDomId,center)
@@ -14,7 +16,8 @@ class THREE extends ThreeBox{
   loaded(){
     // this.register(new Shine(this))
     // this.register(new Physics(this))
-    this.register(new FixBug(this))
+    // this.register(new FixBug(this))
+    this.register(new Shader(this))
   }
 }
 export default THREE
