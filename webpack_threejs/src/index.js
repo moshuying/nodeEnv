@@ -6,6 +6,8 @@ import Test from "./lib/effectStore/Test";
 import Road from "./lib/effectStore/Road";
 import Physics from "./lib/effectStore/Physics";
 import ModelLoader from "./lib/effectStore/ModelLoader";
+import Water from "./lib/effectStore/Water";
+import WhiteTransition from "./lib/effectStore/WhiteTransition";
 // import Test from "./lib/effectStore/Test";
 class Web3DScene {
   constructor() {
@@ -21,8 +23,8 @@ class Web3DScene {
     this.camera = Start.camera();
     this.camera.name = "Web3DSceneCamera";
 
-    Start.initSkyByMesh(this.scene, this.renderer, 10000, this.BaseGroup);
-    Start.initFloorBoard(this.scene, 1000, 100, this.BaseGroup);
+    // Start.initSkyByMesh(this.scene, this.renderer, 10000, this.BaseGroup);
+    // Start.initFloorBoard(this.scene, 1000, 100, this.BaseGroup);
     this.controls = Start.controls(this.camera, this.renderer.domElement);
 
     this.registerAll = [];
@@ -37,9 +39,10 @@ class Web3DScene {
     // this.disRegisterAll();
     // this.register(new Physics(this))
     // this.register(new Shine(this))
-    this.register(new ModelLoader(this));
+    // this.register(new Water(this));
     // this.register(new Test(this));
     // this.register(new Road(this))
+    this.register(new WhiteTransition(this))
     this.initEvent();
     this.animation();
   }
