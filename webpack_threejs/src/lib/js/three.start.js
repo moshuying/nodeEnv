@@ -9,7 +9,13 @@ const {Scene,PerspectiveCamera,WebGLRenderer,Group} = THREE
  * @return {WebGLRenderer} 返回部分初始化的WebGLRenderer对象
  */
 function renderer() {
-    let renderer = new THREE.WebGLRenderer({antialias:true})
+    let threeCanvas = document.createElement('canvas');
+    threeCanvas.style.width = '100%'
+    threeCanvas.style.height = '100%'
+    threeCanvas.style.position = 'absolute'
+    document.body.appendChild(threeCanvas);
+
+    let renderer = new THREE.WebGLRenderer({antialias:true,canvas:threeCanvas})
     renderer.setSize(window.innerWidth, window.innerHeight);
     // renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.setClearColor(0xffffff, 1); //默认填充颜色
@@ -19,7 +25,6 @@ function renderer() {
     renderer.toneMappingExposure = 0.5;
     renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
     // renderer.domElement.style = `width:${window.innerWidth}px;height:${window.innerHeight}px`;
-    document.body.appendChild(renderer.domElement);
     renderer.autoClear = false;
     renderer.debug.checkShaderErrors = false;
     return renderer

@@ -15,11 +15,11 @@ export default class VolumeLight {
   }
   init() {
     this.plan = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(10,10,10),
+      new THREE.PlaneBufferGeometry(10,10),
       new THREE.ShaderMaterial({
         side: THREE.DoubleSide,
         uniforms: {
-          time: { value: 1.0 },
+          time: { value: 0.0 },
         },
         vertexShader: `
         varying vec2 vUv;
