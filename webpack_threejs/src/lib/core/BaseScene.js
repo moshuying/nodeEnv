@@ -16,12 +16,27 @@ class BaseScene {
     // 初始化场景选取射线
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
-
+    this.initRender();
     this.initEvent();
     this.animation();
   }
-  
-  
+  initRender(){
+    let renderer = this.renderer;
+    renderer.name = "Web3DSceneRenderer";
+    renderer.setSize(window.innerWidth , window.innerHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.setClearColor(0xffffff, 1); //默认填充颜色
+    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.5;
+    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
+    renderer.autoClear = false;
+    renderer.debug.checkShaderErrors = false;
+    this.renderer = renderer;
+    document.body.appendChild(renderer.domElement)
+  }
+
   initEvent() {
     const rayCaster = (event) => {
       event.preventDefault();
@@ -37,7 +52,12 @@ class BaseScene {
       }
     };
     this.resizeEvent.push(() => {
-      Start.onWindowResize(this.camera, this.renderer);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+      );
     });
     window.onresize = () => {
       this.resizeEvent.forEach((el) => el());

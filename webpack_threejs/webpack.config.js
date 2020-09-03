@@ -21,8 +21,8 @@ module.exports = {
     compress: true,
     port: 3916
   },
-  //插件HtmlWebpackPlugin 
+  //插件HtmlWebpackPlugin
   plugins: [
-    new HtmlWebpackPlugin({ template: './src/index.html' })
+    new HtmlWebpackPlugin({ template: './public/index.html' })
   ]
 }

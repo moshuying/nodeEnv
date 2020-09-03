@@ -1,27 +1,12 @@
-import THREE from '@/core/three.js'
-import BaseScene from '@/core/BaseScene.js'
-class main extends BaseScene{
+import THREE from './three.js'
+import BaseScene from './BaseScene.js'
+class scene extends BaseScene{
   constructor(){
     super();
     this.initScene()
     this.initControls()
   }
   initScene(){
-    let renderer = this.renderer;
-    renderer.name = "Web3DSceneRenderer";
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.setClearColor(0xffffff, 1); //默认填充颜色
-    renderer.shadowMap.enabled = true; //告诉渲染器需要阴影效果
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 默认的是，没有设置的这个清晰 THREE.PCFShadowMap
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.5;
-    renderer.setPixelRatio(window.devicePixelRatio); //设置dip 避免hiDPI设备模糊
-    renderer.autoClear = false;
-    renderer.debug.checkShaderErrors = false;
-    this.renderer = renderer;
-    document.body.appendChild(renderer.domElement)
-
     this.BaseGroup.name = "Web3DSceneBaseGroup";
     let group = this.BaseGroup;
     const scene = this.scene;
@@ -87,4 +72,4 @@ class main extends BaseScene{
     controls.enablePan = true;
   }
 }
-export default main
+export default scene

@@ -75,8 +75,8 @@ class Shader {
         });
       },
     };
-    window.gui.add(this.options, "download");
-    window.gui.add(this.options, "fbx,glb,obj加载");
+    // window.gui.add(this.options, "download");
+    // window.gui.add(this.options, "fbx,glb,obj加载");
   }
   initEvent() {
     // this.Event.resizeEvent.push(()=>{})
