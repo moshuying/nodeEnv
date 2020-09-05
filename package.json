@@ -1,6 +1,6 @@
 {
   "name": "nodeEnv",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "![GitHub language count](https://img.shields.io/github/languages/count/moshuying/nodeEnv) ![GitHub top language](https://img.shields.io/github/languages/top/moshuying/nodeEnv) ![GitHub file size in bytes](https://img.shields.io/github/repo-size/moshuying/nodeEnv) ![GitHub last commit](https://img.shields.io/github/last-commit/moshuying/nodeEnv)",
   "main": ".cz-config.js",
   "dependencies": {
