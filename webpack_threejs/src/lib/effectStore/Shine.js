@@ -10,8 +10,6 @@ let height = window.innerHeight;
 const {Scene,PerspectiveCamera,WebGLRenderer} = THREE
 class Shine{
     /**
-     *
-     * @param threeBox
      * @param {{camera:PerspectiveCamera,scene:Scene,renderer:WebGLRenderer}}threeBox
      */
     constructor(threeBox){
@@ -19,8 +17,6 @@ class Shine{
         this.threeBox = threeBox
         this.mountArray = ['addSelect','resetSelect']
         this.Event = {}
-        this.mouse = new THREE.Vector2();
-        this.raycaster = new THREE.Raycaster();
         this.init()
     }
     init(){
@@ -40,7 +36,7 @@ class Shine{
         this.effectFXAA.uniforms[ 'resolution' ].value.x = 1 / (width * this.pixelRatio)
         this.effectFXAA.uniforms[ 'resolution' ].value.y = 1 / (height * this.pixelRatio)
         this.composer.addPass(this.effectFXAA)
-        
+
         this.initEvent()
     }
     initEvent(){
@@ -49,8 +45,12 @@ class Shine{
             this.effectFXAA.uniforms[ 'resolution' ].value.x = 1 / (width * this.pixelRatio)
             this.effectFXAA.uniforms[ 'resolution' ].value.y = 1 / (height * this.pixelRatio)
         }
-        this.Event.clickEvent = (e)=>{
-            this.rayCaster(e,this.threeBox.camera,this.threeBox.scene)
+        this.Event.clickEvent = (e,meshs)=>{
+            if(meshs){
+                this.addSelect(meshs[meshs.length-1].object)
+            }else{
+                this.resetSelect()
+            }
         }
     }
     rayCaster(event,camera,scene){

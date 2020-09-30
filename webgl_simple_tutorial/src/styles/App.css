@@ -1,0 +1,76 @@
+.upload ,.upload input,.upload .summary{
+  margin:1% 1% 1% 1%;
+}
+.upload,canvas{
+  width:400px;
+  height: 300px;
+}
+.upload{
+  position: relative;
+  display: inline-block;
+}
+.upload input{
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: none;
+  background: none;
+  outline: none;
+}
+.upload .summary{
+  height: 3.4rem;
+  overflow: scroll;
+}
+.upload .summary::-webkit-scrollbar{ width:0 !important}
+.upload .summary::before{
+  content: "> ";
+}
+/* canvas{
+  box-shadow: 0 0 5px black;
+  border-radius: 4px;
+} */
+body{
+  background-color:#fff;
+}
+body::-webkit-scrollbar { width: 0 !important }
+.App {
+  text-align: center;
+}
+body *{
+  user-select: none;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

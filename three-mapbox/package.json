@@ -1,0 +1,24 @@
+{
+  "name": "threebox",
+  "version": "0.0.0",
+  "description": "three+mapbox 项目模板",
+  "main": "src/index.js",
+  "scripts": {
+    "serve": "webpack-dev-server --open",
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development"
+  },
+  "dependencies": {
+    "html-webpack-plugin": "^4.3.0",
+    "mapbox-gl": "^1.11.1",
+    "three": "^0.119.1",
+    "vue": "^2.6.11",
+    "vue-router": "^3.3.4",
+    "vuex": "^3.5.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "devDependencies": {},
+  "author": "liujiujiang <liujiujiang@xbcx.com.cn> <moshuyingnode@gmail.com> (https://github.com/moshuying)"
+}
