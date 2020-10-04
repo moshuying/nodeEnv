@@ -1,5 +1,7 @@
 # npmenv
-欢迎光临个人小站,每天带你学一点 [moshuying.top](https://moshuying.top)
+
+欢迎光临个人小站,来看点很有意思也很前卫的东西 [moshuying.top](https://moshuying.top)
+
 ![GitHub language count](https://img.shields.io/github/languages/count/moshuying/nodeEnv) ![GitHub top language](https://img.shields.io/github/languages/top/moshuying/nodeEnv) ![GitHub file size in bytes](https://img.shields.io/github/repo-size/moshuying/nodeEnv) ![GitHub last commit](https://img.shields.io/github/last-commit/moshuying/nodeEnv)
  
 
@@ -17,3 +19,4 @@
 |[koa2](https://github.com/moshuying/nodeEnv/tree/master/koa2)|koa2后台样例|
 |[typescript](https://github.com/moshuying/nodeEnv/tree/master/typescript)|typescript开发环境|
 |[vue_three](https://github.com/moshuying/nodeEnv/tree/master/vue_three)|在vue中使用three库|
+|[hexo_three](https://github.com/moshuying/nodeEnv/tree/master/hexo_three)|在hexo中使用three库|
