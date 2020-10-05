@@ -330,6 +330,6 @@ function initHexoThreeModule(divNode,scriptNode) {
 }
 ```
 
-加载iframe到hexo中的完整代码
+[加载iframe到hexo中的完整代码](https://github.com/moshuying/nodeEnv/blob/master/hexo-three/source/uploads/createTHREE.js)
 
-在iframe中加载three的完整代码
+[在iframe中加载shader的完整代码](https://github.com/moshuying/nodeEnv/blob/master/hexo-three/source/uploads/glsl_snippets.js)

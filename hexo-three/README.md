@@ -2,14 +2,9 @@
 
 在hexo中嵌入three.js运行shader或者three.js的场景
 
-clone代码后查看运行时效果
+clone代码后查看运行时效果,或立即访问这里查看效果[https://moshuying.top](https://moshuying.top)[仓库链接](https://github.com/moshuying/nodeEnv/tree/master/hexo-three/)，点个免费的星星感激不尽。
 
-> 主题文件可以切到主题目录下输入以下命令下载主题，也可以自行安装主题或到我的小站查看效果[https://moshuying.top](https://moshuying.top)
-
-```sh
-git clone https://github.com/hexojs/hexo-theme-landscape.git ./
-```
-
+> 主题文件默认情况下似乎不会自动clone可以切到主题目录下下载主题，可以自行clone主题
 
 最近想在hexo中嵌入一些shader，折腾了一些时间后终于完善，实际上用这种方法不仅可以在hexo中嵌入shader,也可以嵌入babylonjs,pxixjs,Layabox,Egret,Cocos2等，先看效果，原理什么的其实很简单。
 
@@ -38,10 +33,10 @@ if (!(self.frameElement && self.frameElement.tagName == "IFRAME")) {
 ```
 # 显示效果
 
-![](./source/uploads/shader.png)
+![](https://github.com/moshuying/nodeEnv/raw/master/hexo-three/source/uploads/shader.png)
 
 # 嵌入threejs3D场景
-![](./source/uploads/threejs3d.png)
+![](https://github.com/moshuying/nodeEnv/raw/master/hexo-three/source/uploads/threejs3d.png)
 
 **一般情况下不建议在一个页面放多个效果**如有必要，可以通过交互时渲染，在视图内渲染等方法优化，避免页面卡死
 
@@ -104,6 +99,5 @@ function initHexoThreeModule(divNode,scriptNode) {
 }
 ```
 
-加载iframe到hexo中的完整代码
-
-在iframe中加载three的完整代码
+[加载iframe到hexo中的完整代码](https://github.com/moshuying/nodeEnv/blob/master/hexo-three/source/uploads/createTHREE.js)
+[在iframe中加载shader的完整代码](https://github.com/moshuying/nodeEnv/blob/master/hexo-three/source/uploads/glsl_snippets.js)
