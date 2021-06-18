@@ -1,6 +1,6 @@
 # npmenv
 
-欢迎光临个人小站,来看点很有意思也很前卫的东西 [moshuying.top](https://moshuying.top)
+欢迎光临个人小站,来看点很有意思也很前卫的东西 [msy.plus](https://msy.plus)
 
 ![GitHub language count](https://img.shields.io/github/languages/count/moshuying/nodeEnv) ![GitHub top language](https://img.shields.io/github/languages/top/moshuying/nodeEnv) ![GitHub file size in bytes](https://img.shields.io/github/repo-size/moshuying/nodeEnv) ![GitHub last commit](https://img.shields.io/github/last-commit/moshuying/nodeEnv)
  
