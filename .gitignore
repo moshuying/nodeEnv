@@ -1,3 +1,5 @@
 **/node_modules
 config.*
 ./CHANGELOG.md
+.DS_Store
+.idea

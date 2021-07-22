@@ -1,0 +1,288 @@
+{
+    "version": 8,
+    "name": "Satellite Streets",
+    "metadata": {
+        "mapbox:type": "default",
+        "mapbox:origin": "satellite-streets-v11",
+        "mapbox:sdk-support": {
+            "android": "9.3.0",
+            "ios": "5.10.0",
+            "js": "1.10.0"
+        },
+        "mapbox:autocomposite": true,
+        "mapbox:groups": {
+            "Transit, transit-labels": {
+                "name": "Transit, transit-labels",
+                "collapsed": false
+            },
+            "Administrative boundaries, admin": {
+                "name": "Administrative boundaries, admin",
+                "collapsed": false
+            },
+            "Buildings, building-labels": {
+                "name": "Buildings, building-labels"
+            },
+            "Road network, bridges": {
+                "name": "Road network, bridges",
+                "collapsed": false
+            },
+            "Road network, tunnels": {
+                "name": "Road network, tunnels",
+                "collapsed": false
+            },
+            "Road network, road-labels": {
+                "name": "Road network, road-labels",
+                "collapsed": false
+            },
+            "Buildings, built": {"name": "Buildings, built"},
+            "Natural features, natural-labels": {
+                "name": "Natural features, natural-labels",
+                "collapsed": false
+            },
+            "Road network, surface": {
+                "name": "Road network, surface",
+                "collapsed": false
+            },
+            "Walking, cycling, etc., barriers-bridges": {
+                "name": "Walking, cycling, etc., barriers-bridges",
+                "collapsed": false
+            },
+            "Place labels, place-labels": {
+                "name": "Place labels, place-labels",
+                "collapsed": false
+            },
+            "Transit, elevated": {
+                "name": "Transit, elevated",
+                "collapsed": false
+            },
+            "Buildings, extruded": {"name": "Buildings, extruded"},
+            "Point of interest labels, poi-labels": {
+                "name": "Point of interest labels, poi-labels",
+                "collapsed": false
+            },
+            "Walking, cycling, etc., tunnels": {
+                "name": "Walking, cycling, etc., tunnels",
+                "collapsed": false
+            },
+            "Road network, tunnels-case": {
+                "name": "Road network, tunnels-case",
+                "collapsed": false
+            },
+            "Walking, cycling, etc., surface": {
+                "name": "Walking, cycling, etc., surface",
+                "collapsed": false
+            },
+            "Road network, surface-icons": {
+                "name": "Road network, surface-icons",
+                "collapsed": false
+            },
+            "Satellite imagery, land": {
+                "name": "Satellite imagery, land",
+                "collapsed": false
+            },
+            "Transit, ferry-aerialway-labels": {
+                "name": "Transit, ferry-aerialway-labels",
+                "collapsed": false
+            }
+        },
+        "mapbox:uiParadigm": "layers",
+        "mapbox:decompiler": {
+            "id": "ckk57iv060j9k17p8h975ezhi",
+            "componentVersion": "7.1.0",
+            "strata": [
+                {
+                    "id": "satellite-streets-v11",
+                    "order": [
+                        ["transit", "built"],
+                        ["buildings", "built"],
+                        ["satellite", "land"],
+                        ["road-network", "tunnels-case"],
+                        ["walking-cycling", "tunnels"],
+                        ["road-network", "tunnels"],
+                        ["transit", "ferries"],
+                        ["walking-cycling", "surface"],
+                        ["road-network", "surface"],
+                        ["transit", "surface"],
+                        ["road-network", "surface-icons"],
+                        ["walking-cycling", "barriers-bridges"],
+                        ["road-network", "bridges"],
+                        ["transit", "bridges"],
+                        ["road-network", "traffic-and-closures"],
+                        ["buildings", "extruded"],
+                        ["transit", "elevated"],
+                        ["admin-boundaries", "admin"],
+                        ["buildings", "building-labels"],
+                        ["road-network", "road-labels"],
+                        ["walking-cycling", "walking-cycling-labels"],
+                        ["transit", "ferry-aerialway-labels"],
+                        ["natural-features", "natural-labels"],
+                        ["point-of-interest-labels", "poi-labels"],
+                        ["transit", "transit-labels"],
+                        ["place-labels", "place-labels"],
+                        "landuse"
+                    ]
+                }
+            ],
+            "components": {
+                "road-network": "7.1.0",
+                "natural-features": "7.1.0",
+                "place-labels": "7.1.0",
+                "admin-boundaries": "7.1.0",
+                "point-of-interest-labels": "7.1.0",
+                "walking-cycling": "7.1.0",
+                "transit": "7.1.0",
+                "satellite": "7.1.0",
+                "buildings": "7.1.0"
+            },
+            "propConfig": {
+                "road-network": {
+                    "roadsFont": ["DIN Pro Medium", "Arial Unicode MS Regular"],
+                    "color-road": "hsla(0, 0%, 90%, 0.5)",
+                    "color-motorway-trunk": "hsla(36, 87%, 68%, 0.7)",
+                    "construction": false,
+                    "color-road-label": "hsl(0, 0%, 100%)",
+                    "fadeOutRoadsOnZoom": true,
+                    "railwayCrossings": false,
+                    "polygonFeatures": false,
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "minorRoads": false,
+                    "turningCircles": false,
+                    "color-road-outline": "hsla(0, 1%, 10%, 0.5)"
+                },
+                "natural-features": {
+                    "poiEtcFont": ["DIN Pro Bold", "Arial Unicode MS Bold"],
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "color-water": "hsl(196, 50%, 50%)",
+                    "color-poi": "hsl(0, 0%, 100%)"
+                },
+                "place-labels": {
+                    "settlementsMinorFont": [
+                        "DIN Pro Medium",
+                        "Arial Unicode MS Regular"
+                    ],
+                    "settlementSubdivisionsFont": [
+                        "DIN Pro Medium",
+                        "Arial Unicode MS Regular"
+                    ],
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "color-place-label": "hsl(0, 0%, 100%)"
+                },
+                "admin-boundaries": {
+                    "admin0Width": 1.5,
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "color-place-label": "hsl(0, 0%, 100%)",
+                    "color-admin-boundary": "hsl(0, 0%, 0%)"
+                },
+                "point-of-interest-labels": {
+                    "poiEtcFont": ["DIN Pro Bold", "Arial Unicode MS Bold"],
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "color-poi": "hsl(0, 0%, 100%)",
+                    "color-greenspace": "hsl(94, 100%, 14%)",
+                    "color-greenspace-label": "hsl(94, 100%, 74%)",
+                    "color-hospital": "hsl(0, 0%, 100%)",
+                    "color-school": "hsl(0, 0%, 100%)"
+                },
+                "walking-cycling": {
+                    "roadsFont": ["DIN Pro Medium", "Arial Unicode MS Regular"],
+                    "golfHoleLabelLine": false,
+                    "color-road": "hsla(0, 0%, 90%, 0.5)",
+                    "color-greenspace": "hsl(94, 100%, 14%)",
+                    "walkingCyclingPisteBackground": false,
+                    "color-road-label": "hsl(0, 0%, 100%)",
+                    "color-greenspace-label": "hsl(94, 100%, 74%)",
+                    "poiEtcFont": ["DIN Pro Bold", "Arial Unicode MS Bold"],
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "pedestrianPolygonFeatures": false,
+                    "color-road-outline": "hsla(0, 1%, 10%, 0.5)",
+                    "labels": false
+                },
+                "transit": {
+                    "color-airport": "hsl(0, 0%, 100%)",
+                    "matchLabelAndIcon": false,
+                    "roadsFont": ["DIN Pro Medium", "Arial Unicode MS Regular"],
+                    "aeroways": false,
+                    "color-transit": "hsl(0, 0%, 100%)",
+                    "color-road": "hsla(0, 0%, 90%, 0.5)",
+                    "color-water": "hsl(196, 50%, 50%)",
+                    "color-road-label": "hsl(0, 0%, 100%)",
+                    "railways": false,
+                    "ferries": false,
+                    "poiEtcFont": ["DIN Pro Bold", "Arial Unicode MS Bold"],
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "color-road-outline": "hsla(0, 1%, 10%, 0.5)"
+                },
+                "satellite": {},
+                "buildings": {
+                    "color-base": "hsl(0, 73%, 34%)",
+                    "3D": true,
+                    "underground": true,
+                    "haloWidth": 2.2
+                }
+            }
+        }
+    },
+    "center": [-118.39270626124318, 33.76773268763533],
+    "zoom": 18.04253649558571,
+    "bearing": -165.37597075401663,
+    "pitch": 36.67333660253219,
+    "sources": {
+        "mapbox://mapbox.satellite": {
+            "url": "mapbox://mapbox.satellite",
+            "type": "raster",
+            "tileSize": 256
+        },
+        "composite": {
+            "url": "mapbox://mapbox.mapbox-streets-v8",
+            "type": "vector"
+        }
+    },
+    "sprite": "mapbox://sprites/moshuying/ckk57iv060j9k17p8h975ezhi/as0osou3i41kx76n4mttmzglq",
+    "glyphs": "mapbox://fonts/moshuying/{fontstack}/{range}.pbf",
+    "layers": [
+        {
+            "id": "building-underground",
+            "type": "fill",
+            "metadata": {
+                "mapbox:featureComponent": "buildings",
+                "mapbox:group": "Buildings, built"
+            },
+            "source": "composite",
+            "source-layer": "building",
+            "minzoom": 15,
+            "filter": [
+                "all",
+                ["==", ["get", "underground"], "true"],
+                ["==", ["geometry-type"], "Polygon"]
+            ],
+            "layout": {},
+            "paint": {
+                "fill-color": "hsl(0, 66%, 21%)",
+                "fill-opacity": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    15,
+                    0,
+                    16,
+                    0.5
+                ]
+            }
+        },
+        {
+            "id": "background",
+            "type": "background",
+            "metadata": {
+                "mapbox:featureComponent": "satellite",
+                "mapbox:group": "Satellite imagery, land"
+            },
+            "layout": {},
+            "paint": {"background-color": "hsl(222, 56%, 4%)"}
+        }
+    ],
+    "created": "2021-01-20T09:11:37.327Z",
+    "modified": "2021-01-20T09:26:08.377Z",
+    "id": "ckk57iv060j9k17p8h975ezhi",
+    "owner": "moshuying",
+    "visibility": "public",
+    "draft": false
+}
