@@ -2,7 +2,7 @@
 
 在hexo中嵌入three.js运行shader或者three.js的场景
 
-clone代码后查看运行时效果,或立即访问这里查看效果[https://moshuying.top](https://moshuying.top)[仓库链接](https://github.com/moshuying/nodeEnv/tree/master/hexo-three/)，点个免费的星星感激不尽。
+clone代码后查看运行时效果,或立即访问这里查看效果[https://msy.plus](https://msy.plus)，点个免费的星星感激不尽。
 
 > 主题文件默认情况下似乎不会自动clone可以切到主题目录下下载主题，可以自行clone主题
 
