@@ -12,7 +12,7 @@
     "child_process": "^1.0.2",
     "cron": "^1.7.1",
     "fs": "0.0.1-security",
-    "nodemailer": "^6.4.6"
+    "nodemailer": "^6.4.16"
   },
   "devDependencies": {
     "eslint": "^6.8.0"
